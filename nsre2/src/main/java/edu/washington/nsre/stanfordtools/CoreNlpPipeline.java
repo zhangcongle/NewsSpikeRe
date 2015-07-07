@@ -489,7 +489,6 @@ public class CoreNlpPipeline {
 				}
 			}
 			Collections.sort(tow, new Comparator<String[]>() {
-				@Override
 				public int compare(String[] x, String[] y) {
 					// TODO Auto-generated method stub
 					return Integer.parseInt(x[1]) - Integer.parseInt(y[1]);
