@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>edu.washington</groupId>
+	<artifactId>nsre2</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>nsre2</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.5.2</version>
+			<classifier>models</classifier>
+		</dependency>
+		<!-- <dependency> <groupId>org.scala-lang</groupId> <artifactId>scala-swing</artifactId> 
+			<version>2.11.0-M7</version> </dependency> <dependency> <groupId>edu.washington.cs.knowitall.ollie</groupId> 
+			<artifactId>ollie-core_2.9.2</artifactId> <version>1.0.2</version> </dependency> 
+			<dependency> <groupId>edu.washington.cs.knowitall.nlptools</groupId> <artifactId>nlptools-parse-malt_2.10</artifactId> 
+			<version>2.4.5</version> </dependency> -->
+		<!-- <dependency> <groupId>edu.washington.cs.knowitall.nlptools</groupId> 
+			<artifactId>nlptools-parse-stanford_2.9.2</artifactId> <version>${nlptools.version}</version> 
+			</dependency> <dependency> <groupId>edu.washington.cs.knowitall.nlptools</groupId> 
+			<artifactId>nlptools-sentence-opennlp_2.9.2</artifactId> <version>${nlptools.version}</version> 
+			</dependency> -->
+
+		<!-- <dependency> <groupId>edu.washington.cs.knowitall</groupId> <artifactId>reverb-core</artifactId> 
+			<version>1.4.3</version> </dependency> <dependency> <groupId>edu.washington.cs.knowitall</groupId> 
+			<artifactId>reverb-models</artifactId> <version>1.4.0</version> </dependency> -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>integration</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<!-- Must download different mosek.jar from mosek.com for different OS! -->
+		<dependency>
+			<groupId>mosek</groupId>
+			<artifactId>mosek</artifactId>
+			<version>osx</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/mosek.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>edu.washington.knowitall</groupId>
+			<artifactId>reverb</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/reverb-latest.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>de.l3s.boilerpipe</groupId>
+			<artifactId>boilerpipe</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
