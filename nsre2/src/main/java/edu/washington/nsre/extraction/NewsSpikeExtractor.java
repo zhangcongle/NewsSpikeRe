@@ -31,6 +31,7 @@ public class NewsSpikeExtractor {
 	static Gson gson = new Gson();
 
 	static Set<String> neg = new HashSet<String>();
+
 	static {
 		neg.add("no");
 		neg.add("not");
@@ -39,18 +40,15 @@ public class NewsSpikeExtractor {
 		neg.add("cancel");
 	}
 
-	public static List<ConnectedComponent> featurize(
-			String inputParallel,
-			String inputCandidates,
-			String dirGenerate) {
+	public static List<ConnectedComponent> featurize(String inputParallel, String inputCandidates, String dirGenerate) {
 		if (!(new File(dirGenerate)).exists()) {
 			(new File(dirGenerate)).mkdir();
 		}
 		List<ConnectedComponent> ccs = new ArrayList<ConnectedComponent>();
 		// HashMap<String, Eec> eecname2eec = new HashMap<String, Eec>();
 		Stat stat = new Stat();
-		generateConnectedComponents(ccs, stat, inputParallel,
-				inputCandidates, dirGenerate + "/generateConnectedComponent");
+		generateConnectedComponents(ccs, stat, inputParallel, inputCandidates,
+				dirGenerate + "/generateConnectedComponent");
 		for (ConnectedComponent cc : ccs) {
 			featurizePhraseWordpair(cc);
 			featurizePhraseContainsNot(cc);
@@ -68,28 +66,21 @@ public class NewsSpikeExtractor {
 		DW dw3 = new DW(dirGenerate + "/feature.cross");
 		for (ConnectedComponent cc : ccs) {
 			// StringBuilder sb = new StringBuilder();
-			dw.write(cc.ccid, Util.counter2jsonstr(cc.phraseFactor.features),
-					cc.eventtype.str, cc.phrase.str,
+			dw.write(cc.ccid, Util.counter2jsonstr(cc.phraseFactor.features), cc.eventtype.str, cc.phrase.str,
 					cc.tuples.size());
 			for (int i = 0; i < cc.tuples.size(); i++) {
 				Tuple t = cc.tuples.get(i);
 				Factor f = cc.tupleFactors.get(i);
-				dw2.write(cc.ccid, i, Util.counter2jsonstr(f.features),
-						cc.eventtype.str, cc.phrase.str,
-						cc.phrase.head, t.getArg1(), t.getArg2(),
-						t.getArg1Ner(),
-						t.getArg2Ner(),
-						Util.counter2str(t.getArg1FineGrainedNer()),
-						Util.counter2str(t.getArg2FineGrainedNer())
-						);
+				dw2.write(cc.ccid, i, Util.counter2jsonstr(f.features), cc.eventtype.str, cc.phrase.str, cc.phrase.head,
+						t.getArg1(), t.getArg2(), t.getArg1Ner(), t.getArg2Ner(),
+						Util.counter2str(t.getArg1FineGrainedNer()), Util.counter2str(t.getArg2FineGrainedNer()));
 			}
 			for (Cell<Integer, Integer, Factor> c : cc.crossFactors.cellSet()) {
 				Factor f = c.getValue();
 				int i = c.getColumnKey();
 				int j = c.getRowKey();
-				dw3.write(cc.ccid, i, j, Util.counter2jsonstr(f.features),
-						cc.tuples.get(i).getEecname(), cc.tuples.get(j)
-								.getEecname());
+				dw3.write(cc.ccid, i, j, Util.counter2jsonstr(f.features), cc.tuples.get(i).getEecname(),
+						cc.tuples.get(j).getEecname());
 			}
 		}
 		dw.close();
@@ -131,8 +122,7 @@ public class NewsSpikeExtractor {
 			Factor tf = cc.tupleFactors.get(i);
 			String sner1 = Util.mapSNer2Nelner(t.getArg1Ner());
 			String sner2 = Util.mapSNer2Nelner(t.getArg2Ner());
-			if (sner1.equals(cc.eventtype.arg1type) &&
-					sner2.equals(cc.eventtype.arg2type)) {
+			if (sner1.equals(cc.eventtype.arg1type) && sner2.equals(cc.eventtype.arg2type)) {
 				tf.add("sner@" + sner1 + "_" + sner2);
 			}
 		}
@@ -144,8 +134,7 @@ public class NewsSpikeExtractor {
 			Factor tf = cc.tupleFactors.get(i);
 			Counter<String> t1s = t.getArg1FineGrainedNer();
 			Counter<String> t2s = t.getArg2FineGrainedNer();
-			if (t1s.getCount(cc.eventtype.arg1type) > 0 &&
-					t2s.getCount(cc.eventtype.arg2type) > 0) {
+			if (t1s.getCount(cc.eventtype.arg1type) > 0 && t2s.getCount(cc.eventtype.arg2type) > 0) {
 				// tf.add("fner@" + cc.eventtype.arg1type + "_"
 				// + cc.eventtype.arg2type);
 				tf.add("fner");
@@ -161,15 +150,11 @@ public class NewsSpikeExtractor {
 			Counter<String> t2s = t.getArg2FineGrainedNer();
 			String fner1max = Counters.argmax(t1s);
 			String fner2max = Counters.argmax(t2s);
-			if ((fner1max.equals(cc.eventtype.arg1type) ||
-					cc.eventtype.arg1typelen > 1
-							&& t1s.getCount(cc.eventtype.arg1type) > 0)
-					&&
-					(fner2max.equals(cc.eventtype.arg2type) ||
-					cc.eventtype.arg2typelen > 1
-							&& t2s.getCount(cc.eventtype.arg2type) > 0)) {
-				tf.add("fnermax@" + cc.eventtype.arg1type + "_"
-						+ cc.eventtype.arg2type);
+			if ((fner1max.equals(cc.eventtype.arg1type)
+					|| cc.eventtype.arg1typelen > 1 && t1s.getCount(cc.eventtype.arg1type) > 0)
+					&& (fner2max.equals(cc.eventtype.arg2type)
+							|| cc.eventtype.arg2typelen > 1 && t2s.getCount(cc.eventtype.arg2type) > 0)) {
+				tf.add("fnermax@" + cc.eventtype.arg1type + "_" + cc.eventtype.arg2type);
 				// tf.add("fnermax");
 			}
 		}
@@ -186,12 +171,7 @@ public class NewsSpikeExtractor {
 			Eec ei = stat.eecname2eec.get(ti.getEecname());
 			{
 				// type of this Tuple
-				String[] w = DW.tow(ei.eecname,
-						i + "",
-						ti.getArg1(),
-						ti.getArg2(),
-						ti.getArg1Head(),
-						ti.getArg2Head(),
+				String[] w = DW.tow(ei.eecname, i + "", ti.getArg1(), ti.getArg2(), ti.getArg1Head(), ti.getArg2Head(),
 						"", "");
 				Factor tf = cc.tupleFactors.get(i);
 				int type = -1; // do not consider
@@ -300,13 +280,10 @@ public class NewsSpikeExtractor {
 				int si = Integer.parseInt(s[1]);
 				if (oi == si)
 					continue;
-				if (!eec2phrases.containsKey(s[0])
-						|| !eec2phrases.containsKey(o[0]))
+				if (!eec2phrases.containsKey(s[0]) || !eec2phrases.containsKey(o[0]))
 					continue;
-				List<String> eiphrases = new ArrayList<String>(
-						eec2phrases.get(s[0]));
-				List<String> ejphrases = new ArrayList<String>(
-						eec2phrases.get(o[0]));
+				List<String> eiphrases = new ArrayList<String>(eec2phrases.get(s[0]));
+				List<String> ejphrases = new ArrayList<String>(eec2phrases.get(o[0]));
 
 				int shared = StringUtil.numOfShareWords(eiphrases, ejphrases);
 				if (shared >= 3) {
@@ -344,21 +321,16 @@ public class NewsSpikeExtractor {
 		for (String w : w2split)
 			w2set.add(w);
 		for (String w : w1split) {
-			if (w2set.contains(w) && StringUtil.isCapStartString(w)
-					&& !RemoveStopwords.isStop(w.toLowerCase())) {
+			if (w2set.contains(w) && StringUtil.isCapStartString(w) && !RemoveStopwords.isStop(w.toLowerCase())) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static void generateConnectedComponents(
-			List<ConnectedComponent> ccs,
-			Stat stat,
+	public static void generateConnectedComponents(List<ConnectedComponent> ccs, Stat stat,
 			// HashMap<String, Eec> eecname2eec,
-			String input_tuples,
-			String input_candidates,
-			String output) {
+			String input_tuples, String input_candidates, String output) {
 		List<Tuple> tuples = new ArrayList<Tuple>();
 		HashMultimap<String, Tuple> phrase2tuples = HashMultimap.create();
 		stat.phrase2tuples = phrase2tuples;
@@ -375,8 +347,7 @@ public class NewsSpikeExtractor {
 				EventPhrase.keywords.put(eventtype, head);
 				for (int i = 4; i < head.length() + 1; i++) {
 					String root = head.substring(0, i);
-					EventPhrase.keywordsroot2event2keywords.put(root, eventtype
-							, head);
+					EventPhrase.keywordsroot2event2keywords.put(root, eventtype, head);
 				}
 			}
 			dr.close();
@@ -428,15 +399,13 @@ public class NewsSpikeExtractor {
 					{
 						String eecname = t.getEecname();
 						for (Tuple tInEec : stat.eecname2eec.get(eecname).tuples) {
-							if (tInEec.getPatternHead().contains(
-									cc.eventtype.eventphrase.head)) {
+							if (tInEec.getPatternHead().contains(cc.eventtype.eventphrase.head)) {
 								eecContainsHead = true;
 								break;
 							}
 						}
 					}
-					if (eecContainsHead &&
-							patternKeywords.contains(head)
+					if (eecContainsHead && patternKeywords.contains(head)
 					// &&
 					// arg1typedist.getCount(cc.eventtype.arg1type) > 0 &&
 					// arg2typedist.getCount(cc.eventtype.arg2type) > 0
@@ -454,216 +423,221 @@ public class NewsSpikeExtractor {
 			}
 			dr.close();
 		}
-		D.p("Number of connected components", ccs.size());
+		// D.p("Number of connected components", ccs.size());
 	}
 
-	public static void learning_copy(List<ConnectedComponent> ccs,
-			String input_labeledphrase,
-			String output) {
-		DW dwdebug = new DW(output + ".debug");
-		HashMap<String, Integer> phraselabels = new HashMap<String, Integer>();
-		{
-			DR dr = new DR(input_labeledphrase);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				phraselabels.put(l[1] + "\t" + l[3], Integer.parseInt(l[0]));
-			}
-			dr.close();
-		}
-		HashMap<Integer, Integer> ccid2labels = new HashMap<Integer, Integer>();
+	// public static void learning_copy(List<ConnectedComponent> ccs,
+	// String input_labeledphrase,
+	// String output) {
+	// DW dwdebug = new DW(output + ".debug");
+	// HashMap<String, Integer> phraselabels = new HashMap<String, Integer>();
+	// {
+	// DR dr = new DR(input_labeledphrase);
+	// String[] l;
+	// while ((l = dr.read()) != null) {
+	// phraselabels.put(l[1] + "\t" + l[3], Integer.parseInt(l[0]));
+	// }
+	// dr.close();
+	// }
+	// HashMap<Integer, Integer> ccid2labels = new HashMap<Integer, Integer>();
+	//
+	// HashMultimap<String, EventType> eecnamePhrase2Label = HashMultimap
+	// .create();
+	// for (ConnectedComponent cc : ccs) {
+	// if (phraselabels.containsKey(cc.eventtype.str + "\t"
+	// + cc.phrase.str)) {
+	// int z = phraselabels.get(cc.eventtype.str + "\t"
+	// + cc.phrase.str);
+	// ccid2labels.put(cc.ccid, z);
+	// if (z == 1) {
+	// for (int i = 0; i < cc.tuples.size(); i++) {
+	// Tuple t = cc.tuples.get(i);
+	// Factor f = cc.tupleFactors.get(i);
+	// Counter<String> t1s = t.getArg1FineGrainedNer();
+	// Counter<String> t2s = t.getArg2FineGrainedNer();
+	// String fner1max = Counters.argmax(t1s);
+	// String fner2max = Counters.argmax(t2s);
+	// if (fner1max.equals(cc.eventtype.arg1type) &&
+	// fner2max.equals(cc.eventtype.arg2type)) {
+	// eecnamePhrase2Label.put(t.getArg1() + "\t" + t.getArg2() + "\t"
+	// + cc.phrase, cc.eventtype);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// List<ConnectedComponentTrain> ccts = new
+	// ArrayList<ConnectedComponentTrain>();
+	// HashMap<Integer, ConnectedComponentTrain> ccid2ccts = new
+	// HashMap<Integer, ConnectedComponentTrain>();
+	//
+	// for (ConnectedComponent cc : ccs) {
+	// if (ccid2labels.containsKey(cc.ccid)) {
+	// ConnectedComponentTrain cct = new ConnectedComponentTrain(cc);
+	// ccid2ccts.put(cct.ccid, cct);
+	// ccts.add(cct);
+	// if (ccid2labels.get(cc.ccid) == 1) {
+	// cct.phraseTruth = 1;
+	// } else {
+	// cct.phraseTruth = -1;
+	// }
+	// // set up tuple Truth
+	// if (cct.phraseTruth == -1) {
+	// // do not need anything
+	// } else {
+	// HashMap<Integer, Integer> oldid2newid = new HashMap<Integer, Integer>();
+	// for (int i = 0; i < cc.tuples.size(); i++) {
+	// Tuple t = cc.tuples.get(i);
+	// Factor f = cc.tupleFactors.get(i);
+	// String key = t.getArg1() + "\t" + t.getArg2() + "\t" + cct.phrase;
+	// if (eecnamePhrase2Label.containsKey(key)) {
+	// int newid = cct.tuples.size();
+	// cct.tuples.add(t);
+	// cct.tupleFactors.add(f);
+	// oldid2newid.put(i, newid);
+	// Set<EventType> eventtypes = eecnamePhrase2Label.get(key);
+	// if (!eventtypes.contains(cc.eventtype)) {
+	// cct.tupleTruths.add(-1);
+	// } else {
+	// cct.tupleTruths.add(1);
+	// }
+	//
+	// }
+	// }
+	// // set up cross factors
+	// for (Cell<Integer, Integer, Factor> cell : cc.crossFactors.cellSet()) {
+	// int oldidX = cell.getColumnKey();
+	// int oldidY = cell.getRowKey();
+	// Factor f = cell.getValue();
+	// if (oldid2newid.containsKey(oldidX) && oldid2newid.containsKey(oldidY)) {
+	// int newidX = oldid2newid.get(oldidX);
+	// int newidY = oldid2newid.get(oldidY);
+	// cct.crossFactors.put(newidX, newidY, f);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// for (ConnectedComponentTrain cct : ccts) {
+	// dwdebug.write("labelY", cct.phraseTruth, cct.eventtype, cct.phrase,
+	// Util.counter2str(cct.phraseFactor.features));
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// Tuple t = cct.tuples.get(i);
+	// dwdebug.write("labelZ", cct.tupleTruths.get(i), t.getArg1() + "\t" +
+	// t.getArg2()
+	// + "\t"
+	// + cct.phrase, cct.eventtype.str,
+	// Util.counter2str(cct.tupleFactors.get(i).features));
+	// }
+	// }
+	//
+	// // set initial weight
+	// Counter<String> weight = new ClassicCounter<String>();
+	// for (ConnectedComponentTrain cct : ccts) {
+	// cct.phrasePred = -1;
+	// for (String f : cct.phraseFactor.features.keySet()) {
+	// weight.setCount(f, 0);
+	// }
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// cct.tuplePreds.add(-1);
+	// for (String f : cct.tupleFactors.get(i).features.keySet()) {
+	// weight.setCount(f, 0);
+	// }
+	// }
+	// for (Cell<Integer, Integer, Factor> cell : cct.crossFactors.cellSet()) {
+	// for (String f : cell.getValue().features.keySet()) {
+	// weight.setCount(f, 0);
+	// }
+	// }
+	// }
+	// for (int t = 0; t < 5; t++) {
+	// D.p("iteration", t);
+	// for (ConnectedComponentTrain cct : ccts) {
+	// HashMap<String, Double> infer = inference(weight, cct);
+	// cct.phrasePred = infer.containsKey("Y") && infer.get("Y") > 0.9 ? 1 : -1;
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// int p = infer.containsKey("Z" + i) && infer.get("Z" + i) > 0.9 ? 1 : -1;
+	// cct.tuplePreds.set(i, p);
+	// }
+	// // print errors
+	// if (cct.phrasePred != cct.phraseTruth) {
+	// dwdebug.write("ErrorY" + t, cct.phraseTruth, cct.phrasePred,
+	// cct.eventtype,
+	// cct.phrase,
+	// Util.counter2str(cct.phraseFactor.features));
+	// }
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// Tuple t0 = cct.tuples.get(i);
+	// if (cct.tuplePreds.get(i) != cct.tupleTruths.get(i)) {
+	// dwdebug.write("ErrorZ" + t, cct.tupleTruths.get(i),
+	// cct.tuplePreds.get(i),
+	// t0.getArg1() + "\t" + t0.getArg2() + "\t"
+	// + cct.phrase, cct.eventtype.str,
+	// Util.counter2str(cct.tupleFactors.get(i).features));
+	// }
+	// }
+	// }
+	// for (ConnectedComponentTrain cct : ccts) {
+	// {
+	// int dir = getUpdateDir(cct.phrasePred, cct.phraseTruth);
+	// for (String f : cct.phraseFactor.features.keySet()) {
+	// weight.incrementCount(f, dir);
+	// }
+	// }
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// int dir = getUpdateDir(cct.tuplePreds.get(i), cct.tupleTruths.get(i));
+	// for (String f : cct.tupleFactors.get(i).features.keySet()) {
+	// weight.incrementCount(f, dir);
+	// }
+	// }
+	// for (Cell<Integer, Integer, Factor> cell : cct.crossFactors.cellSet()) {
+	// int x = cell.getRowKey();
+	// int y = cell.getColumnKey();
+	// Factor factor = cell.getValue();
+	// int dir = 0;
+	// if (cct.tupleTruths.get(x) + cct.tupleTruths.get(y) == 2
+	// && (cct.tuplePreds.get(x) != 1 || cct.tuplePreds.get(y) != 1)) {
+	// dir = 1;
+	// } else if (cct.tupleTruths.get(x) + cct.tupleTruths.get(y) == 0
+	// && (cct.tuplePreds.get(x) + cct.tuplePreds.get(y) == 2)) {
+	// dir = -1;
+	// }
+	// for (String f : factor.features.keySet()) {
+	// weight.incrementCount(f, dir);
+	// }
+	// }
+	// }
+	// }
+	// DW dw = new DW(output);
+	// for (ConnectedComponent cc : ccs) {
+	// Set<String> appeared = new HashSet<String>();
+	// if (ccid2ccts.containsKey(cc.ccid)) {
+	// ConnectedComponentTrain cct = ccid2ccts.get(cc.ccid);
+	// for (int i = 0; i < cct.tuples.size(); i++) {
+	// Tuple t = cc.tuples.get(i);
+	// if (cct.tupleTruths.get(i) == 1) {
+	// dw.write(cc.eventtype.str, cc.phrase.str, t.getEecname(),
+	// gson.toJson(t));
+	// appeared.add(t.getSentence());
+	// }
+	// }
+	// }
+	// HashMap<String, Double> infer = inference(weight, cc);
+	// for (int i = 0; i < cc.tuples.size(); i++) {
+	// Tuple t = cc.tuples.get(i);
+	// if (appeared.contains(t.getSentence()))
+	// continue;
+	// if (infer.containsKey("Z" + i) && infer.get("Z" + i) > 0.9) {
+	// dw.write(cc.eventtype.str, cc.phrase.str, t.getEecname(),
+	// gson.toJson(t));
+	// }
+	// }
+	// }
+	// dw.close();
+	// dwdebug.close();
+	// }
 
-		HashMultimap<String, EventType> eecnamePhrase2Label = HashMultimap
-				.create();
-		for (ConnectedComponent cc : ccs) {
-			if (phraselabels.containsKey(cc.eventtype.str + "\t"
-					+ cc.phrase.str)) {
-				int z = phraselabels.get(cc.eventtype.str + "\t"
-						+ cc.phrase.str);
-				ccid2labels.put(cc.ccid, z);
-				if (z == 1) {
-					for (int i = 0; i < cc.tuples.size(); i++) {
-						Tuple t = cc.tuples.get(i);
-						Factor f = cc.tupleFactors.get(i);
-						Counter<String> t1s = t.getArg1FineGrainedNer();
-						Counter<String> t2s = t.getArg2FineGrainedNer();
-						String fner1max = Counters.argmax(t1s);
-						String fner2max = Counters.argmax(t2s);
-						if (fner1max.equals(cc.eventtype.arg1type) &&
-								fner2max.equals(cc.eventtype.arg2type)) {
-							eecnamePhrase2Label.put(t.getArg1() + "\t" + t.getArg2() + "\t"
-									+ cc.phrase, cc.eventtype);
-						}
-					}
-				}
-			}
-		}
-		List<ConnectedComponentTrain> ccts = new ArrayList<ConnectedComponentTrain>();
-		HashMap<Integer, ConnectedComponentTrain> ccid2ccts = new HashMap<Integer, ConnectedComponentTrain>();
-
-		for (ConnectedComponent cc : ccs) {
-			if (ccid2labels.containsKey(cc.ccid)) {
-				ConnectedComponentTrain cct = new ConnectedComponentTrain(cc);
-				ccid2ccts.put(cct.ccid, cct);
-				ccts.add(cct);
-				if (ccid2labels.get(cc.ccid) == 1) {
-					cct.phraseTruth = 1;
-				} else {
-					cct.phraseTruth = -1;
-				}
-				// set up tuple Truth
-				if (cct.phraseTruth == -1) {
-					// do not need anything
-				} else {
-					HashMap<Integer, Integer> oldid2newid = new HashMap<Integer, Integer>();
-					for (int i = 0; i < cc.tuples.size(); i++) {
-						Tuple t = cc.tuples.get(i);
-						Factor f = cc.tupleFactors.get(i);
-						String key = t.getArg1() + "\t" + t.getArg2() + "\t" + cct.phrase;
-						if (eecnamePhrase2Label.containsKey(key)) {
-							int newid = cct.tuples.size();
-							cct.tuples.add(t);
-							cct.tupleFactors.add(f);
-							oldid2newid.put(i, newid);
-							Set<EventType> eventtypes = eecnamePhrase2Label.get(key);
-							if (!eventtypes.contains(cc.eventtype)) {
-								cct.tupleTruths.add(-1);
-							} else {
-								cct.tupleTruths.add(1);
-							}
-
-						}
-					}
-					// set up cross factors
-					for (Cell<Integer, Integer, Factor> cell : cc.crossFactors.cellSet()) {
-						int oldidX = cell.getColumnKey();
-						int oldidY = cell.getRowKey();
-						Factor f = cell.getValue();
-						if (oldid2newid.containsKey(oldidX) && oldid2newid.containsKey(oldidY)) {
-							int newidX = oldid2newid.get(oldidX);
-							int newidY = oldid2newid.get(oldidY);
-							cct.crossFactors.put(newidX, newidY, f);
-						}
-					}
-				}
-			}
-		}
-		for (ConnectedComponentTrain cct : ccts) {
-			dwdebug.write("labelY", cct.phraseTruth, cct.eventtype, cct.phrase,
-					Util.counter2str(cct.phraseFactor.features));
-			for (int i = 0; i < cct.tuples.size(); i++) {
-				Tuple t = cct.tuples.get(i);
-				dwdebug.write("labelZ", cct.tupleTruths.get(i), t.getArg1() + "\t" + t.getArg2()
-						+ "\t"
-						+ cct.phrase, cct.eventtype.str,
-						Util.counter2str(cct.tupleFactors.get(i).features));
-			}
-		}
-
-		// set initial weight
-		Counter<String> weight = new ClassicCounter<String>();
-		for (ConnectedComponentTrain cct : ccts) {
-			cct.phrasePred = -1;
-			for (String f : cct.phraseFactor.features.keySet()) {
-				weight.setCount(f, 0);
-			}
-			for (int i = 0; i < cct.tuples.size(); i++) {
-				cct.tuplePreds.add(-1);
-				for (String f : cct.tupleFactors.get(i).features.keySet()) {
-					weight.setCount(f, 0);
-				}
-			}
-			for (Cell<Integer, Integer, Factor> cell : cct.crossFactors.cellSet()) {
-				for (String f : cell.getValue().features.keySet()) {
-					weight.setCount(f, 0);
-				}
-			}
-		}
-		for (int t = 0; t < 5; t++) {
-			D.p("iteration", t);
-			for (ConnectedComponentTrain cct : ccts) {
-				HashMap<String, Double> infer = inference(weight, cct);
-				cct.phrasePred = infer.containsKey("Y") && infer.get("Y") > 0.9 ? 1 : -1;
-				for (int i = 0; i < cct.tuples.size(); i++) {
-					int p = infer.containsKey("Z" + i) && infer.get("Z" + i) > 0.9 ? 1 : -1;
-					cct.tuplePreds.set(i, p);
-				}
-				// print errors
-				if (cct.phrasePred != cct.phraseTruth) {
-					dwdebug.write("ErrorY" + t, cct.phraseTruth, cct.phrasePred, cct.eventtype,
-							cct.phrase,
-							Util.counter2str(cct.phraseFactor.features));
-				}
-				for (int i = 0; i < cct.tuples.size(); i++) {
-					Tuple t0 = cct.tuples.get(i);
-					if (cct.tuplePreds.get(i) != cct.tupleTruths.get(i)) {
-						dwdebug.write("ErrorZ" + t, cct.tupleTruths.get(i), cct.tuplePreds.get(i),
-								t0.getArg1() + "\t" + t0.getArg2() + "\t"
-										+ cct.phrase, cct.eventtype.str,
-								Util.counter2str(cct.tupleFactors.get(i).features));
-					}
-				}
-			}
-			for (ConnectedComponentTrain cct : ccts) {
-				{
-					int dir = getUpdateDir(cct.phrasePred, cct.phraseTruth);
-					for (String f : cct.phraseFactor.features.keySet()) {
-						weight.incrementCount(f, dir);
-					}
-				}
-				for (int i = 0; i < cct.tuples.size(); i++) {
-					int dir = getUpdateDir(cct.tuplePreds.get(i), cct.tupleTruths.get(i));
-					for (String f : cct.tupleFactors.get(i).features.keySet()) {
-						weight.incrementCount(f, dir);
-					}
-				}
-				for (Cell<Integer, Integer, Factor> cell : cct.crossFactors.cellSet()) {
-					int x = cell.getRowKey();
-					int y = cell.getColumnKey();
-					Factor factor = cell.getValue();
-					int dir = 0;
-					if (cct.tupleTruths.get(x) + cct.tupleTruths.get(y) == 2
-							&& (cct.tuplePreds.get(x) != 1 || cct.tuplePreds.get(y) != 1)) {
-						dir = 1;
-					} else if (cct.tupleTruths.get(x) + cct.tupleTruths.get(y) == 0
-							&& (cct.tuplePreds.get(x) + cct.tuplePreds.get(y) == 2)) {
-						dir = -1;
-					}
-					for (String f : factor.features.keySet()) {
-						weight.incrementCount(f, dir);
-					}
-				}
-			}
-		}
-		DW dw = new DW(output);
-		for (ConnectedComponent cc : ccs) {
-			Set<String> appeared = new HashSet<String>();
-			if (ccid2ccts.containsKey(cc.ccid)) {
-				ConnectedComponentTrain cct = ccid2ccts.get(cc.ccid);
-				for (int i = 0; i < cct.tuples.size(); i++) {
-					Tuple t = cc.tuples.get(i);
-					if (cct.tupleTruths.get(i) == 1) {
-						dw.write(cc.eventtype.str, cc.phrase.str, t.getEecname(), gson.toJson(t));
-						appeared.add(t.getSentence());
-					}
-				}
-			}
-			HashMap<String, Double> infer = inference(weight, cc);
-			for (int i = 0; i < cc.tuples.size(); i++) {
-				Tuple t = cc.tuples.get(i);
-				if (appeared.contains(t.getSentence()))
-					continue;
-				if (infer.containsKey("Z" + i) && infer.get("Z" + i) > 0.9) {
-					dw.write(cc.eventtype.str, cc.phrase.str, t.getEecname(), gson.toJson(t));
-				}
-			}
-		}
-		dw.close();
-		dwdebug.close();
-	}
-
-	public static void learning(List<ConnectedComponent> ccs,
-			String input_labeledphrase,
-			String output) {
+	public static void learning(List<ConnectedComponent> ccs, String input_labeledphrase, String output) {
 		DW dwdebug = new DW(output + ".debug");
 		HashMap<String, Integer> phraselabels = new HashMap<String, Integer>();
 		{
@@ -677,13 +651,10 @@ public class NewsSpikeExtractor {
 		}
 		HashMap<Integer, Integer> ccid2labels = new HashMap<Integer, Integer>();
 
-		HashMultimap<String, EventType> eecnamePhrase2Label = HashMultimap
-				.create();
+		HashMultimap<String, EventType> eecnamePhrase2Label = HashMultimap.create();
 		for (ConnectedComponent cc : ccs) {
-			if (phraselabels.containsKey(cc.eventtype.str + "\t"
-					+ cc.phrase.str)) {
-				int z = phraselabels.get(cc.eventtype.str + "\t"
-						+ cc.phrase.str);
+			if (phraselabels.containsKey(cc.eventtype.str + "\t" + cc.phrase.str)) {
+				int z = phraselabels.get(cc.eventtype.str + "\t" + cc.phrase.str);
 				ccid2labels.put(cc.ccid, z);
 				if (z == 1) {
 					for (int i = 0; i < cc.tuples.size(); i++) {
@@ -693,10 +664,8 @@ public class NewsSpikeExtractor {
 						Counter<String> t2s = t.getArg2FineGrainedNer();
 						String fner1max = Counters.argmax(t1s);
 						String fner2max = Counters.argmax(t2s);
-						if (fner1max.equals(cc.eventtype.arg1type) &&
-								fner2max.equals(cc.eventtype.arg2type)) {
-							eecnamePhrase2Label.put(t.getArg1() + "\t" + t.getArg2() + "\t"
-									+ cc.phrase, cc.eventtype);
+						if (fner1max.equals(cc.eventtype.arg1type) && fner2max.equals(cc.eventtype.arg2type)) {
+							eecnamePhrase2Label.put(t.getArg1() + "\t" + t.getArg2() + "\t" + cc.phrase, cc.eventtype);
 						}
 					}
 				}
@@ -757,10 +726,8 @@ public class NewsSpikeExtractor {
 					Util.counter2str(cct.phraseFactor.features));
 			for (int i = 0; i < cct.tuples.size(); i++) {
 				Tuple t = cct.tuples.get(i);
-				dwdebug.write("labelZ", cct.tupleTruths.get(i), t.getArg1() + "\t" + t.getArg2()
-						+ "\t"
-						+ cct.phrase, cct.eventtype.str,
-						Util.counter2str(cct.tupleFactors.get(i).features));
+				dwdebug.write("labelZ", cct.tupleTruths.get(i), t.getArg1() + "\t" + t.getArg2() + "\t" + cct.phrase,
+						cct.eventtype.str, Util.counter2str(cct.tupleFactors.get(i).features));
 			}
 		}
 
@@ -784,7 +751,7 @@ public class NewsSpikeExtractor {
 			}
 		}
 		for (int t = 0; t < 10; t++) {
-//			D.p("iteration", t);
+			// D.p("iteration", t);
 			for (ConnectedComponentTrain cct : ccts) {
 				HashMap<String, Double> infer = inference(weight, cct);
 				cct.phrasePred = infer.containsKey("Y") && infer.get("Y") > 0.9 ? 1 : -1;
@@ -794,16 +761,14 @@ public class NewsSpikeExtractor {
 				}
 				// print errors
 				if (cct.phrasePred != cct.phraseTruth) {
-					dwdebug.write("ErrorY" + t, cct.phraseTruth, cct.phrasePred, cct.eventtype,
-							cct.phrase,
+					dwdebug.write("ErrorY" + t, cct.phraseTruth, cct.phrasePred, cct.eventtype, cct.phrase,
 							Util.counter2str(cct.phraseFactor.features));
 				}
 				for (int i = 0; i < cct.tuples.size(); i++) {
 					Tuple t0 = cct.tuples.get(i);
 					if (cct.tuplePreds.get(i) != cct.tupleTruths.get(i)) {
 						dwdebug.write("ErrorZ" + t, cct.tupleTruths.get(i), cct.tuplePreds.get(i),
-								t0.getArg1() + "\t" + t0.getArg2() + "\t"
-										+ cct.phrase, cct.eventtype.str,
+								t0.getArg1() + "\t" + t0.getArg2() + "\t" + cct.phrase, cct.eventtype.str,
 								Util.counter2str(cct.tupleFactors.get(i).features));
 					}
 				}
@@ -863,8 +828,7 @@ public class NewsSpikeExtractor {
 				for (int i = 0; i < cct.tuples.size(); i++) {
 					Tuple t = cc.tuples.get(i);
 					if (cct.tupleTruths.get(i) == 1) {
-						tow.add(DW.tow(cc.eventtype.str, cc.phrase.str, t.getEecname(),
-								gson.toJson(t)));
+						tow.add(DW.tow(cc.eventtype.str, cc.phrase.str, t.getEecname(), gson.toJson(t)));
 						// dw.write(cc.eventtype.str, cc.phrase.str,
 						// t.getEecname(), gson.toJson(t));
 						positive = true;
@@ -906,8 +870,7 @@ public class NewsSpikeExtractor {
 		return dir;
 	}
 
-	public static HashMap<String, Double> inferenceILP(Counter<String> weight,
-			ConnectedComponent cc) {
+	public static HashMap<String, Double> inference(Counter<String> weight, ConnectedComponent cc) {
 		IntegerLinearProgramming ilp = new IntegerLinearProgramming();
 		Counter<String> objective = new ClassicCounter<String>();
 		ilp.setObjective(objective, true);
@@ -951,9 +914,7 @@ public class NewsSpikeExtractor {
 		return result;
 	}
 
-
-	public static HashMap<String, Double> inference(Counter<String> weight,
-			ConnectedComponent cc) {
+	public static HashMap<String, Double> inferenceApproximate(Counter<String> weight, ConnectedComponent cc) {
 		HashMap<String, Double> result = new HashMap<String, Double>();
 		double scoreY = cc.phraseFactor.score(weight, -0.1);
 		if (scoreY > 0) {
@@ -982,9 +943,7 @@ public class NewsSpikeExtractor {
 		return result;
 	}
 
-	public static void buildExtractor(String input_generated,
-			String input_test,
-			String output_extraction) {
+	public static void buildExtractor(String input_generated, String input_test, String output_extraction) {
 		StanfordRegression sr = new StanfordRegression();
 		List<String> training_instances = new ArrayList<String>();
 		List<HashMap<String, Double>> training_features = new ArrayList<HashMap<String, Double>>();
@@ -997,8 +956,7 @@ public class NewsSpikeExtractor {
 			EventType eventtype = new EventType(l[0]);
 			Tuple t = gson.fromJson(l[3], Tuple.class);
 			String tupleName = l[2];
-			possibleEvents.put(eventtype.arg1type + "|" + l[1] + "|" + eventtype.arg2type,
-					eventtype.str);
+			possibleEvents.put(eventtype.arg1type + "|" + l[1] + "|" + eventtype.arg2type, eventtype.str);
 			// for (String f : fts.keySet()) {
 			//
 			// }
@@ -1055,9 +1013,7 @@ public class NewsSpikeExtractor {
 		dw.close();
 	}
 
-	public static void buildExtractor(
-			String generatedTrainingFile,
-			String modelFile) throws IOException {
+	public static void buildExtractor(String generatedTrainingFile, String modelFile) throws IOException {
 		StanfordRegression sr = new StanfordRegression();
 		List<String> training_instances = new ArrayList<String>();
 		List<HashMap<String, Double>> training_features = new ArrayList<HashMap<String, Double>>();
@@ -1083,11 +1039,10 @@ public class NewsSpikeExtractor {
 			if (!weight.containsKey(eventtype.str)) {
 				weight.put(eventtype.str, new ClassicCounter<String>());
 			}
-			weight.get(eventtype.str).setCount(eventtype.arg1type + "|" + phrase + "|"
-					+ eventtype.arg2type, -1000);
+			weight.get(eventtype.str).setCount(eventtype.arg1type + "|" + phrase + "|" + eventtype.arg2type, -1000);
 		}
 		int k = 0;
-		
+
 		while ((l = dr.read()) != null) {
 			EventType eventtype = new EventType(l[0]);
 			Tuple t = gson.fromJson(l[3], Tuple.class);
@@ -1105,9 +1060,8 @@ public class NewsSpikeExtractor {
 				// }
 			}
 			String[] wordsInShortestPath = t.wordsInShortestPath();
-			if (wordsInShortestPath!=null && wordsInShortestPath.length >= 2) {
-				String f = eventtype.arg1type + "|" + t.getShortestPathFromTuple() + "|"
-						+ eventtype.arg2type;
+			if (wordsInShortestPath != null && wordsInShortestPath.length >= 2) {
+				String f = eventtype.arg1type + "|" + t.getShortestPathFromTuple() + "|" + eventtype.arg2type;
 				fts.put(f, 1.0);
 			}
 			training_instances.add(tupleName);
@@ -1116,8 +1070,7 @@ public class NewsSpikeExtractor {
 			if (!weight.containsKey(eventtype.str)) {
 				weight.put(eventtype.str, new ClassicCounter<String>());
 			}
-			weight.get(eventtype.str).setCount(eventtype.arg1type + "|" + l[1] + "|"
-					+ eventtype.arg2type, 100);
+			weight.get(eventtype.str).setCount(eventtype.arg1type + "|" + l[1] + "|" + eventtype.arg2type, 100);
 		}
 		dr.close();
 		sr.trainRVF(training_features, training_labels);

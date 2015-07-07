@@ -19,13 +19,12 @@ import com.google.gson.Gson;
 import edu.stanford.nlp.stats.ClassicCounter;
 import edu.stanford.nlp.stats.Counter;
 import edu.stanford.nlp.stats.Counters;
-//import extraction.Tuple;
+import edu.washington.nsre.extraction.Tuple;
 
 public class Util {
 	public static String counter2str(Counter<String> c) {
 		if (c != null) {
-			return Counters.toSortedString(c, Integer.MAX_VALUE, "%s=%f", ", ",
-					"[%s]");
+			return Counters.toSortedString(c, Integer.MAX_VALUE, "%s=%f", ", ", "[%s]");
 		} else {
 			return "{}";
 		}
@@ -33,8 +32,7 @@ public class Util {
 
 	public static String counter2str(Counter<String> c, int k) {
 		if (c != null && c.size() > 0)
-			return Counters.toSortedString(c, k, "%s=%f", ", ",
-					"[%s]");
+			return Counters.toSortedString(c, k, "%s=%f", ", ", "[%s]");
 		else
 			return "";
 	}
@@ -139,8 +137,7 @@ public class Util {
 		return today;
 	}
 
-	public static void getRelationPairsFromClustering(String input,
-			Set<String> pairs, Set<String> diffheadPairs) {
+	public static void getRelationPairsFromClustering(String input, Set<String> pairs, Set<String> diffheadPairs) {
 		DR dr = new DR(input);
 		String[] l;
 		List<String[]> lines = new ArrayList<String[]>();
@@ -181,8 +178,7 @@ public class Util {
 		dr.close();
 	}
 
-	public static HashSet<String> getPositiveRelationsFromClustering(
-			String input) {
+	public static HashSet<String> getPositiveRelationsFromClustering(String input) {
 		HashSet<String> correct = new HashSet<String>();
 		{
 			DR dr = new DR(input);
@@ -229,8 +225,7 @@ public class Util {
 		return ret;
 	}
 
-	public static HashMultimap<Integer, String> loadClusterOutputInStrHardonly(
-			String file) {
+	public static HashMultimap<Integer, String> loadClusterOutputInStrHardonly(String file) {
 		HashMultimap<Integer, String> ret = HashMultimap.create();
 		DR dr = new DR(file);
 		String[] l;
@@ -242,10 +237,8 @@ public class Util {
 					HashSet<String> temp = new HashSet<String>();
 					for (String[] a : lines) {
 						String r = a[2];
-						String key = newsspikeid
-								+ "\t" + r;
-						if (Double.parseDouble(a[0]) > 0.99
-								&& !ret.containsEntry(newsspikeid, key)) {
+						String key = newsspikeid + "\t" + r;
+						if (Double.parseDouble(a[0]) > 0.99 && !ret.containsEntry(newsspikeid, key)) {
 							temp.add(key);
 						}
 					}
@@ -264,8 +257,7 @@ public class Util {
 		return ret;
 	}
 
-	public static HashMultimap<Integer, String> loadClusterOutputInStrHardonly0702(
-			String file) {
+	public static HashMultimap<Integer, String> loadClusterOutputInStrHardonly0702(String file) {
 		HashMultimap<Integer, String> ret = HashMultimap.create();
 		DR dr = new DR(file);
 		String[] l;
@@ -280,11 +272,9 @@ public class Util {
 					for (String[] a : lines) {
 						String r = Tuple.getRidOfOlliePartOfRelation(a[1]);
 						// int c = headcount.see(a[2]);
-						if (Double.parseDouble(a[0]) > 0.99
-								&& !a[2].equals(majorityHead)
-								// && hc.see(a[2]) == 1
-								&& !ret.containsEntry(newsspikeid, newsspikeid
-										+ "\t" + r)) {
+						if (Double.parseDouble(a[0]) > 0.99 && !a[2].equals(majorityHead)
+						// && hc.see(a[2]) == 1
+								&& !ret.containsEntry(newsspikeid, newsspikeid + "\t" + r)) {
 							ret.put(newsspikeid, newsspikeid + "\t" + r);
 						}
 					}
@@ -336,10 +326,8 @@ public class Util {
 		return ret;
 	}
 
-	public static List<String[]> evalsingle(
-			HashMap<Integer, List<String[]>> gold,
-			HashMap<Integer, List<String[]>> answer,
-			int[] ret) {
+	public static List<String[]> evalsingle(HashMap<Integer, List<String[]>> gold,
+			HashMap<Integer, List<String[]>> answer, int[] ret) {
 		List<String[]> debug = new ArrayList<String[]>();
 		for (Entry<Integer, List<String[]>> e : gold.entrySet()) {
 			int modelId = e.getKey();
@@ -368,7 +356,6 @@ public class Util {
 		// }
 		// }
 		Collections.sort(debug, new Comparator<String[]>() {
-			@Override
 			public int compare(String[] arg0, String[] arg1) {
 				return arg0[0].compareTo(arg1[0]);
 			}
@@ -376,9 +363,8 @@ public class Util {
 		return debug;
 	}
 
-	private static void evalsingleHelp_0702(List<String[]> glines,
-			List<String[]> alines, int[] ret, List<String[]> debug,
-			int modelId) {
+	private static void evalsingleHelp_0702(List<String[]> glines, List<String[]> alines, int[] ret,
+			List<String[]> debug, int modelId) {
 		// set ret[0]
 		String majorityHead = majorityHead(glines);
 		{
@@ -422,16 +408,14 @@ public class Util {
 			}
 			for (String[] l : glines) {
 				int c = headcount.see(l[2]);
-				if (Double.parseDouble(l[0]) > 0.9
-						&& !majorityHead.equals(l[2])
+				if (Double.parseDouble(l[0]) > 0.9 && !majorityHead.equals(l[2])
 				// && c <= 1
 				) {
 					golds.add(Tuple.getRidOfOlliePartOfRelation(l[1]));
 				}
 			}
 			for (String[] l : alines) {
-				if (Double.parseDouble(l[0]) > 0.9
-						&& !majorityHead.equals(l[2])
+				if (Double.parseDouble(l[0]) > 0.9 && !majorityHead.equals(l[2])
 				// headcount.see(l[2]) <= 1
 				) {
 					answers.add(Tuple.getRidOfOlliePartOfRelation(l[1]));
@@ -447,8 +431,7 @@ public class Util {
 		}
 	}
 
-	private static void evalsingleHelp(List<String[]> glines,
-			List<String[]> alines, int[] ret, List<String[]> debug,
+	private static void evalsingleHelp(List<String[]> glines, List<String[]> alines, int[] ret, List<String[]> debug,
 			int modelId) {
 		// set ret[0]
 		// String majorityHead = majorityHead(glines);
@@ -518,8 +501,7 @@ public class Util {
 		}
 	}
 
-	private static void evalsingleHelpNoRetAnswer(List<String[]> glines,
-			int[] ret, List<String[]> debug, int modelId) {
+	private static void evalsingleHelpNoRetAnswer(List<String[]> glines, int[] ret, List<String[]> debug, int modelId) {
 		// set ret[0]
 		{
 			Set<String> golds = new HashSet<String>();
@@ -573,8 +555,7 @@ public class Util {
 		return res;
 	}
 
-	public static List<String[]> getNersFromTokensNers(String[] tkns, String[] ners, int start,
-			int end) {
+	public static List<String[]> getNersFromTokensNers(String[] tkns, String[] ners, int start, int end) {
 		List<String[]> res = new ArrayList<String[]>();
 		int i = start, j = 0;
 		while (i < end) {
@@ -610,8 +591,7 @@ public class Util {
 		return bipartite;
 	}
 
-	public static HashMap<String, String> greedyCoveringSolver(
-			HashMap<String, Counter<String>> bipartite,
+	public static HashMap<String, String> greedyCoveringSolver(HashMap<String, Counter<String>> bipartite,
 			double threshold) {
 		// HashMultimap<String, String> ftr2obj = HashMultimap.create();
 		HashMap<String, String> node2tag = new HashMap<String, String>();
@@ -680,12 +660,9 @@ public class Util {
 			return "/time";
 		} else if (sner.equals("DURATION")) {
 			return "/time";
-		} else if (sner.equals("MONEY") ||
-				sner.equals("PERCENT") ||
-				sner.equals("NUMBER")) {
+		} else if (sner.equals("MONEY") || sner.equals("PERCENT") || sner.equals("NUMBER")) {
 			return "/" + sner.toLowerCase();
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

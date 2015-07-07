@@ -20,10 +20,7 @@ import edu.washington.nsre.util.Util;
 
 public class NewsSpikePredict {
 
-	public static void predict(
-			String input_model,
-			String input_test,
-			String output_extraction) {
+	public static void predict(String input_model, String input_test, String output_extraction) {
 		Map<String, Counter<String>> ftrEventMap = new HashMap<String, Counter<String>>();
 		DW dw = new DW(output_extraction);
 		DR dr = new DR(input_model);
@@ -95,8 +92,7 @@ public class NewsSpikePredict {
 		dw.close();
 	}
 
-	public static Counter<String> scoresOf(Map<String, Counter<String>> ftrEventMap,
-			HashMap<String, Double> fts) {
+	public static Counter<String> scoresOf(Map<String, Counter<String>> ftrEventMap, HashMap<String, Double> fts) {
 		Counter<String> ret = new ClassicCounter<String>();
 		for (String f : fts.keySet()) {
 			double v1 = fts.get(f);
@@ -112,12 +108,8 @@ public class NewsSpikePredict {
 		return ret;
 	}
 
-	public static void predict(
-			String input_generated,
-			String input_model,
-			String input_test,
-			String output_extraction
-			) {
+	public static void predict(String input_generated, String input_model, String input_test,
+			String output_extraction) {
 		StanfordRegression sr = new StanfordRegression();
 		sr.loadModel(input_model);
 		DR dr = new DR(input_generated);
@@ -128,8 +120,7 @@ public class NewsSpikePredict {
 			EventType eventtype = new EventType(l[0]);
 			Tuple t = gson.fromJson(l[3], Tuple.class);
 			String tupleName = l[2];
-			possibleEvents.put(eventtype.arg1type + "|" + l[1] + "|" + eventtype.arg2type,
-					eventtype.str);
+			possibleEvents.put(eventtype.arg1type + "|" + l[1] + "|" + eventtype.arg2type, eventtype.str);
 			HashMap<String, Double> fts = new HashMap<String, Double>();
 			for (String pattern : t.getPatternList()) {
 				String f = eventtype.arg1type + "|" + pattern + "|" + eventtype.arg2type;
@@ -187,16 +178,16 @@ public class NewsSpikePredict {
 		// String input_generated = args[0];
 		try {
 			Config.parseConfig();
-			String inputTestFile= args[0];
+			String inputTestFile = args[0];
 			String outputPredictFile = args[1];
 			predict(Config.modelFile, inputTestFile, outputPredictFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		String input_model = args[0];
-//		String input_test = args[1];
-//		String output_extraction = args[2];
-//		predict(input_model, input_test, output_extraction);
+		// String input_model = args[0];
+		// String input_test = args[1];
+		// String output_extraction = args[2];
+		// predict(input_model, input_test, output_extraction);
 		// readDump(input_model);
 		// predict(input_generated, input_model, input_test, output_extraction);
 

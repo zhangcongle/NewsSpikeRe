@@ -41,8 +41,8 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 //import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.trees.TypedDependency;
-import edu.stanford.nlp.trees.semgraph.SemanticGraph;
-import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
+//import edu.stanford.nlp.trees.semgraph.SemanticGraph;
+//import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.util.CoreMap;
 
 public class CoreNlpPipeline {
@@ -56,22 +56,27 @@ public class CoreNlpPipeline {
 		Gson gson = new Gson();
 		CorenlpParsedArticle cpa = cnp.parseDocumentWithCoref(0, sentence, gson);
 		System.out.println(gson.toJson(cpa));
-		//		cnp.parse2lines("Bieber , 18 , was leaving the theater in suburban Calabasas with girlfriend Selena Gomez on May 27 when he had the encounter in a parking lot .");
-		//		cnp.parse2lines("Bieber , 18 , was leaving the theater in suburban Calabasas with girlfriend Selena Gomez on May 27 when he had the encounter in a parking lot .");
-		//		cnp.parseDocumentJson(input, output);
+		// cnp.parse2lines("Bieber , 18 , was leaving the theater in suburban
+		// Calabasas with girlfriend Selena Gomez on May 27 when he had the
+		// encounter in a parking lot .");
+		// cnp.parse2lines("Bieber , 18 , was leaving the theater in suburban
+		// Calabasas with girlfriend Selena Gomez on May 27 when he had the
+		// encounter in a parking lot .");
+		// cnp.parseDocumentJson(input, output);
 	}
 
 	public static void main_(String[] args) throws FileNotFoundException, IOException {
 		CoreNlpPipeline cnp = new CoreNlpPipeline();
 		String input = args[0];
 		String output = args[1];
-		//		cnp.parseDocument(input, output);
+		// cnp.parseDocument(input, output);
 		cnp.parseDocumentJson(input, output);
 	}
 
 	public CoreNlpPipeline() {
 		props = new Properties();
-		//		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+		// props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse,
+		// dcoref");
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
 		pipeline = new StanfordCoreNLP(props);
 		gsf = new PennTreebankLanguagePack().grammaticalStructureFactory();
@@ -79,7 +84,8 @@ public class CoreNlpPipeline {
 
 	public CoreNlpPipeline(String props_str) {
 		props = new Properties();
-		//		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");
+		// props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse,
+		// dcoref");
 		props.put("annotators", props_str);
 		pipeline = new StanfordCoreNLP(props);
 		gsf = new PennTreebankLanguagePack().grammaticalStructureFactory();
@@ -87,7 +93,7 @@ public class CoreNlpPipeline {
 
 	public String parseDocumentJson(int sectionId, String text, Gson gson) {
 
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		ParsedText pt = new ParsedText();
 		pt.sectionId = sectionId;
 		Annotation document = new Annotation(text);
@@ -105,7 +111,7 @@ public class CoreNlpPipeline {
 
 	public ParsedText parseDocument(int sectionId, String text, Gson gson) {
 
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		ParsedText pt = new ParsedText();
 		pt.sectionId = sectionId;
 		Annotation document = new Annotation(text);
@@ -122,7 +128,7 @@ public class CoreNlpPipeline {
 
 	public CorenlpParsedArticle parseDocumentWithCoref(int sectionId, String text, Gson gson) {
 
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		CorenlpParsedArticle pa = new CorenlpParsedArticle();
 		pa.sectionId = sectionId;
 		Annotation document = new Annotation(text);
@@ -136,18 +142,19 @@ public class CoreNlpPipeline {
 		}
 		{
 			Map<Integer, CorefChain> graph = document.get(CorefChainAnnotation.class);
-			//			D.p(graph.size());
+			// D.p(graph.size());
 			for (Entry<Integer, CorefChain> e : graph.entrySet()) {
 				int chainid = e.getKey();
 				CorefChain cc = e.getValue();
 				CorefResult cr = new CorefResult();
 				pa.corefchains.add(cr);
-				for (CorefMention m : cc.getCorefMentions()) {
-					//				for (CorefMention m : cc.getMentionsInTextualOrder()) {
-					cr.names.add(m.mentionSpan);
-					cr.chain.add(new int[] { m.sentNum - 1, m.startIndex - 1, m.endIndex - 1 });
-					//					D.p(m.toString(), cc.getChainID());
-				}
+				// for (CorefMention m : cc.getCorefMentions()) {
+				// // for (CorefMention m : cc.getMentionsInTextualOrder()) {
+				// cr.names.add(m.mentionSpan);
+				// cr.chain.add(new int[] { m.sentNum - 1, m.startIndex - 1,
+				// m.endIndex - 1 });
+				// // D.p(m.toString(), cc.getChainID());
+				// }
 			}
 			graph = null;
 		}
@@ -158,7 +165,7 @@ public class CoreNlpPipeline {
 
 	public String parseDocumentJsonWithCoref(int sectionId, String text, Gson gson) {
 
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		CorenlpParsedArticle pa = new CorenlpParsedArticle();
 		pa.sectionId = sectionId;
 		Annotation document = new Annotation(text);
@@ -173,18 +180,19 @@ public class CoreNlpPipeline {
 		String result = "";
 		{
 			Map<Integer, CorefChain> graph = document.get(CorefChainAnnotation.class);
-			//			D.p(graph.size());
+			// D.p(graph.size());
 			for (Entry<Integer, CorefChain> e : graph.entrySet()) {
 				int chainid = e.getKey();
 				CorefChain cc = e.getValue();
 				CorefResult cr = new CorefResult();
 				pa.corefchains.add(cr);
-				for (CorefMention m : cc.getCorefMentions()) {
-					//				for (CorefMention m : cc.getMentionsInTextualOrder()) {
-					cr.names.add(m.mentionSpan);
-					cr.chain.add(new int[] { m.sentNum - 1, m.startIndex - 1, m.endIndex - 1 });
-					//					D.p(m.toString(), cc.getChainID());
-				}
+				// for (CorefMention m : cc.getCorefMentions()) {
+				// // for (CorefMention m : cc.getMentionsInTextualOrder()) {
+				// cr.names.add(m.mentionSpan);
+				// cr.chain.add(new int[] { m.sentNum - 1, m.startIndex - 1,
+				// m.endIndex - 1 });
+				// // D.p(m.toString(), cc.getChainID());
+				// }
 			}
 			graph = null;
 			result = gson.toJson(pa);
@@ -199,7 +207,8 @@ public class CoreNlpPipeline {
 		Annotation document = new Annotation(sentence_str);
 		pipeline.annotate(document);
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
-		//all sentences are actually inside one sentence, so there is an offset for dep
+		// all sentences are actually inside one sentence, so there is an offset
+		// for dep
 
 		int totallen = 0;
 		List<ParsedSentence> subs = new ArrayList<ParsedSentence>();
@@ -235,13 +244,14 @@ public class CoreNlpPipeline {
 
 	public void parseDocumentJson(String input, String output) throws FileNotFoundException, IOException {
 		DelimitedReader dr = new DelimitedReader(input);
-		//		GZIPOutputStream zip = new GZIPOutputStream(new FileOutputStream(new File(output + ".gz")));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(
-				new File(output + ".gz"))), "UTF-8"));
-		//		DelimitedWriter dw = new DelimitedWriter(output);
+		// GZIPOutputStream zip = new GZIPOutputStream(new FileOutputStream(new
+		// File(output + ".gz")));
+		BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(new File(output + ".gz"))), "UTF-8"));
+		// DelimitedWriter dw = new DelimitedWriter(output);
 		Gson gson = new Gson();
 		String[] l;
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		int numSections = 0;
 		long startTime = (new Date()).getTime();
 		while ((l = dr.read()) != null) {
@@ -260,7 +270,7 @@ public class CoreNlpPipeline {
 			}
 			String jsonstr = gson.toJson(pt);
 			bw.write(pt.sectionId + "\t" + jsonstr + "\n");
-			{//speed
+			{// speed
 				numSections++;
 				long spend = (new Date()).getTime() - startTime;
 				if (numSections % 100 == 0) {
@@ -277,7 +287,7 @@ public class CoreNlpPipeline {
 
 		Gson gson = new Gson();
 
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		int numSections = 0;
 		long startTime = (new Date()).getTime();
 
@@ -307,14 +317,14 @@ public class CoreNlpPipeline {
 				pt.parsedsentence.add(ps);
 			}
 			String jsonstr = gson.toJson(pt);
-			//			dw.write(pt.sectionId, jsonstr);
+			// dw.write(pt.sectionId, jsonstr);
 			tow.add(new String[] { pt.sectionId + "", jsonstr });
-			{//speed
+			{// speed
 				numSections++;
 				long spend = (new Date()).getTime() - startTime;
 				if (numSections % 10 == 0) {
 					D.p(input, "Avg speed", spend * 1.0 / numSections);
-					//					dw.flush();
+					// dw.flush();
 				}
 			}
 		}
@@ -339,15 +349,15 @@ public class CoreNlpPipeline {
 		DelimitedWriter dw_coref = new DelimitedWriter(output + ".coref");
 
 		String[] l;
-		//l[]: article_name (String), section_id (int), text
+		// l[]: article_name (String), section_id (int), text
 		while ((l = dr.read()) != null) {
 			int section_id = Integer.parseInt(l[0]);
 			String text = l[1];
 			parse(section_id, text, dw_token, dw_pos, dw_morpha, dw_deps, dw_ner, dw_coref);
-			//			for (int i = sentenceId; i < updatedsentenceId; i++) {
-			//				dw_meta.write(section_id, i);
-			//			}
-			//			sentenceId = updatedsentenceId;
+			// for (int i = sentenceId; i < updatedsentenceId; i++) {
+			// dw_meta.write(section_id, i);
+			// }
+			// sentenceId = updatedsentenceId;
 		}
 		dr.close();
 		dw_meta.close();
@@ -378,15 +388,9 @@ public class CoreNlpPipeline {
 		return nes;
 	}
 
-	public void parse(int sectionId,
-			String text,
-			DelimitedWriter dw_token,
-			DelimitedWriter dw_pos,
-			DelimitedWriter dw_morph,
-			DelimitedWriter dw_deps,
-			DelimitedWriter dw_ner,
-			DelimitedWriter dw_coref) {
-		//		int sentenceId = 0;
+	public void parse(int sectionId, String text, DelimitedWriter dw_token, DelimitedWriter dw_pos,
+			DelimitedWriter dw_morph, DelimitedWriter dw_deps, DelimitedWriter dw_ner, DelimitedWriter dw_coref) {
+		// int sentenceId = 0;
 		List<List<String[]>> result = new ArrayList<List<String[]>>();
 		Annotation document = new Annotation(text);
 
@@ -399,7 +403,7 @@ public class CoreNlpPipeline {
 		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 		for (int sentenceId = 0; sentenceId < sentences.size(); sentenceId++) {
 			CoreMap sentence = sentences.get(sentenceId);
-			//			for (CoreMap sentence : sentences) {
+			// for (CoreMap sentence : sentences) {
 			List<String> tokenlist = new ArrayList<String>();
 			List<String> poslist = new ArrayList<String>();
 			List<String> inputlist = new ArrayList<String>();
@@ -419,9 +423,9 @@ public class CoreNlpPipeline {
 				inputlist.add(word + "_" + pos);
 				tokenlist.add(word);
 				D.p(ne);
-				//D.p(word, pos, ne, morph);
-				//parsed_sentence.add(r);
-				//System.out.println(word + "\t" + pos + "\t" + ne);
+				// D.p(word, pos, ne, morph);
+				// parsed_sentence.add(r);
+				// System.out.println(word + "\t" + pos + "\t" + ne);
 
 			}
 
@@ -439,7 +443,7 @@ public class CoreNlpPipeline {
 			{
 				StringBuilder sb = new StringBuilder();
 				for (TypedDependency td : tdl) {
-					//					TypedDependency td = tdl.(i);
+					// TypedDependency td = tdl.(i);
 					String name = td.reln().getShortName();
 					if (td.reln().getSpecific() != null)
 						name += "-" + td.reln().getSpecific();
@@ -447,20 +451,19 @@ public class CoreNlpPipeline {
 					int gov = td.gov().index();
 					int dep = td.dep().index();
 					if (gov == dep) {
-						//System.err.println("same???");
+						// System.err.println("same???");
 					}
 					if (gov == 0 || dep == 1) {
 						continue;
 					}
 					depslist.add(name + "(" + tokenlist.get(gov - 1) + "-" + gov + ", " + tokenlist.get(dep - 1) + "-"
-							+ dep
-							+ ")");
+							+ dep + ")");
 					sb.append((td.gov().index()) + " ");
 					sb.append(name + " ");
 					sb.append((td.dep().index()));
 					sb.append("|");
-					//					if (i < tdl.size() - 1)
-					//						sb.append("|");
+					// if (i < tdl.size() - 1)
+					// sb.append("|");
 				}
 				dw_deps.write(sectionId, sentenceId, sb.toString());
 			}
@@ -470,23 +473,23 @@ public class CoreNlpPipeline {
 			D.p(graph.size());
 			List<String[]> tow = new ArrayList<String[]>();
 			for (Entry<Integer, CorefChain> e : graph.entrySet()) {
-				//				int chainid = e.getKey();
+				// int chainid = e.getKey();
 				CorefChain cc = e.getValue();
 
-				for (CorefMention m : cc.getCorefMentions()) {
-					//				for (CorefMention m : cc.getMentionsInTextualOrder()) {
-					int sid = m.sentNum;
-					tow.add(new String[] { sid + "",
-							m.corefClusterID + "",
-							m.mentionID + "",
-							m.startIndex + "",
-							m.endIndex + "",
-							m.gender + "",
-							m.mentionSpan + "",
-							m.mentionType + "",
-							m.number + ""
-					});
-				}
+				// for (CorefMention m : cc.getCorefMentions()) {
+				// // for (CorefMention m : cc.getMentionsInTextualOrder()) {
+				// int sid = m.sentNum;
+				// tow.add(new String[] { sid + "",
+				// m.corefClusterID + "",
+				// m.mentionID + "",
+				// m.startIndex + "",
+				// m.endIndex + "",
+				// m.gender + "",
+				// m.mentionSpan + "",
+				// m.mentionType + "",
+				// m.number + ""
+				// });
+				// }
 			}
 			Collections.sort(tow, new Comparator<String[]>() {
 				public int compare(String[] x, String[] y) {
@@ -526,18 +529,18 @@ public class CoreNlpPipeline {
 				// this is the POS tag of the token
 				String pos = token.get(PartOfSpeechAnnotation.class);
 				// this is the NER label of the token
-				//String ne = token.get(NamedEntityTagAnnotation.class);
+				// String ne = token.get(NamedEntityTagAnnotation.class);
 				String morph = token.get(LemmaAnnotation.class);
 
 				morphlist.add(morph);
 				inputlist.add(word + "_" + pos);
 				tokenlist.add(word);
-				//D.p(word, pos, ne, morph);
-				//parsed_sentence.add(r);
-				//System.out.println(word + "\t" + pos + "\t" + ne);
+				// D.p(word, pos, ne, morph);
+				// parsed_sentence.add(r);
+				// System.out.println(word + "\t" + pos + "\t" + ne);
 
 			}
-			//result.add(parsed_sentence);
+			// result.add(parsed_sentence);
 			// this is the parse tree of the current sentence
 			Tree tree = sentence.get(TreeAnnotation.class);
 			GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
@@ -545,7 +548,7 @@ public class CoreNlpPipeline {
 			{
 				StringBuilder sb = new StringBuilder();
 				for (TypedDependency td : tdl) {
-					//					TypedDependency td = tdl.(i);
+					// TypedDependency td = tdl.(i);
 					String name = td.reln().getShortName();
 					if (td.reln().getSpecific() != null)
 						name += "-" + td.reln().getSpecific();
@@ -553,30 +556,31 @@ public class CoreNlpPipeline {
 					int gov = td.gov().index();
 					int dep = td.dep().index();
 					if (gov == dep) {
-						//System.err.println("same???");
+						// System.err.println("same???");
 					}
 					if (gov < 1 || dep < 1) {
 						continue;
 					}
 					depslist.add(name + "(" + tokenlist.get(gov - 1) + "-" + gov + ", " + tokenlist.get(dep - 1) + "-"
-							+ dep
-							+ ")");
+							+ dep + ")");
 					sb.append((td.gov().index()) + " ");
 					sb.append(name + " ");
 					sb.append((td.dep().index()));
 					sb.append("|");
-					//					if (i < tdl.size() - 1)
-					//						sb.append("|");
+					// if (i < tdl.size() - 1)
+					// sb.append("|");
 				}
-				//System.out.println(sb.toString());
+				// System.out.println(sb.toString());
 				// this is the Stanford dependency graph of the current sentence
-				//			SemanticGraph dependencies = sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);
-				//			dependencies.
-				//			D.p(dependencies);
+				// SemanticGraph dependencies =
+				// sentence.get(CollapsedCCProcessedDependenciesAnnotation.class);
+				// dependencies.
+				// D.p(dependencies);
 
 				// This is the coreference link graph
 				// Each chain stores a set of mentions that link to each other,
-				// along with a method for getting the most representative mention
+				// along with a method for getting the most representative
+				// mention
 				// Both sentence and token offsets start at 1!
 			}
 			{
@@ -585,10 +589,10 @@ public class CoreNlpPipeline {
 				for (Entry<Integer, CorefChain> e : graph.entrySet()) {
 					int chainid = e.getKey();
 					CorefChain cc = e.getValue();
-					//					for (CorefMention m : cc.getMentionsInTextualOrder()) {
-					for (CorefMention m : cc.getCorefMentions()) {
-						D.p(m.toString(), cc.getChainID());
-					}
+					// for (CorefMention m : cc.getMentionsInTextualOrder()) {
+					// for (CorefMention m : cc.getCorefMentions()) {
+					// D.p(m.toString(), cc.getChainID());
+					// }
 				}
 			}
 			for (String a : inputlist) {
