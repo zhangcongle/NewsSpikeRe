@@ -33,8 +33,7 @@ public class NewsSpikeCandidate {
 		String s2;
 		int count;
 
-		public KV(String kw, String phrase, String eecname, String s1,
-				String s2, int count) {
+		public KV(String kw, String phrase, String eecname, String s1, String s2, int count) {
 			this.kw = kw;
 			this.phrase = phrase;
 			this.eecname = eecname;
@@ -49,10 +48,7 @@ public class NewsSpikeCandidate {
 		List<KV> kvlist = new ArrayList<KV>();
 	}
 
-	public static void candidates(
-			String inputParallel,
-			String inputEvents,
-			String outputKeywords,
+	public static void candidates(String inputParallel, String inputEvents, String outputKeywords,
 			String outputCandidates) {
 
 		Set<String> neg = new HashSet<String>();
@@ -61,8 +57,7 @@ public class NewsSpikeCandidate {
 		neg.add("never");
 		neg.add("refuse");
 		neg.add("cancel");
-		HashMultimap<String, HashMap<String, String[]>> map = HashMultimap
-				.create();
+		HashMultimap<String, HashMap<String, String[]>> map = HashMultimap.create();
 		HashMultimap<String, String> verb2events = HashMultimap.create();
 		{
 			DR dr = new DR(inputEvents);
@@ -93,14 +88,12 @@ public class NewsSpikeCandidate {
 					String eec = l[0];
 					Counter<String> dist1 = t.getArg1FineGrainedNer();
 					Counter<String> dist2 = t.getArg2FineGrainedNer();
-					if (t.getRel() != null
-							&& verb2events.containsKey(t.getRel())) {
+					if (t.getRel() != null && verb2events.containsKey(t.getRel())) {
 						for (String event : verb2events.get(t.getRel())) {
 							String[] verb_arg1type_arg2type = event.split("@");
 							String arg1type = verb_arg1type_arg2type[1];
 							String arg2type = verb_arg1type_arg2type[2];
-							if (dist1.getCount(arg1type) > 0
-									&& dist2.getCount(arg2type) > 0) {
+							if (dist1.getCount(arg1type) > 0 && dist2.getCount(arg2type) > 0) {
 								events2sentence.put(event, t);
 							}
 						}
@@ -113,12 +106,8 @@ public class NewsSpikeCandidate {
 						Tuple t = gson.fromJson(l[2], Tuple.class);
 						Tuple tk = events2sentence.get(event);
 						Set<String> keys = t.getPatternKeywords();
-						String[] w = DW.tow(event, "",
-								eecname, tk.getSentence(), t.getSentence(),
-								tk.getPatternHead(), eventPhrases,
-								t.getArg1Head()
-										+ "\t" + t.getArg2Head()
-								);
+						String[] w = DW.tow(event, "", eecname, tk.getSentence(), t.getSentence(), tk.getPatternHead(),
+								eventPhrases, t.getArg1Head() + "\t" + t.getArg2Head());
 						for (String kw : keys) {
 							w[1] = kw;
 							tow.add(w);
@@ -129,13 +118,11 @@ public class NewsSpikeCandidate {
 			dr.close();
 			Collections.sort(tow, new Comparator<String[]>() {
 				public int compare(String[] o1, String[] o2) {
-					return StringUtil
-							.compareStrings(o1, o2, new int[] { 0, 1 });
+					return StringUtil.compareStrings(o1, o2, new int[] { 0, 1 });
 				}
 			});
 			List<String[]> tow2 = new ArrayList<String[]>();
-			List<List<String[]>> blocks = StringTable.toblock(tow, new int[] {
-					0, 1 });
+			List<List<String[]>> blocks = StringTable.toblock(tow, new int[] { 0, 1 });
 			DW dw = new DW(outputKeywords);
 			DW dwcan = new DW(outputCandidates);
 			for (List<String[]> c : blocks) {
@@ -170,14 +157,10 @@ public class NewsSpikeCandidate {
 				KVList kvlist = new KVList();
 				kvlist.kvlist = kvs;
 				String temp = gson.toJson(kvlist);
-				if (c0[0].equals("win@/person@/award")
-						&& c0[1].equals("dominate")) {
+				if (c0[0].equals("win@/person@/award") && c0[1].equals("dominate")) {
 					// D.p("temp");
 				}
-				tow2.add(DW.tow("??", c0[0],
-						c0[1],
-						temp,
-						uniqHeadPairs.size()));
+				tow2.add(DW.tow("??", c0[0], c0[1], temp, uniqHeadPairs.size()));
 			}
 
 			// group by event+keyword
@@ -206,9 +189,7 @@ public class NewsSpikeCandidate {
 			// }
 			Collections.sort(tow2, new Comparator<String[]>() {
 				public int compare(String[] o1, String[] o2) {
-					return StringUtil
-							.compareStrings(o1, o2, new int[] { 1, 4 },
-									new boolean[] { false, true });
+					return StringUtil.compareStrings(o1, o2, new int[] { 1, 4 }, new boolean[] { false, true });
 				}
 			});
 			Counter<String> c = new IntCounter<String>();
@@ -222,8 +203,7 @@ public class NewsSpikeCandidate {
 
 				{
 					for (KV kv : kvlist.kvlist) {
-						String[] candidate = new String[] { eventtype, kw,
-								kv.phrase };
+						String[] candidate = new String[] { eventtype, kw, kv.phrase };
 						boolean containsNeg = false;
 						for (String w0 : kv.phrase.split(" ")) {
 							if (neg.contains(w0)) {
@@ -236,9 +216,7 @@ public class NewsSpikeCandidate {
 					}
 					// c.incrementCount(eventtype);
 				}
-				if (c.getCount(eventtype) < CAP1 || (uniqHeadSize >= CAP2
-						&& c.getCount(eventtype) < CAP3))
-				{
+				if (c.getCount(eventtype) < CAP1 || (uniqHeadSize >= CAP2 && c.getCount(eventtype) < CAP3)) {
 					// if (labeled.containsKey(w[1] + "\t" + w[2])) {
 					// w[0] = labeled.get(w[1] + "\t" + w[2]) + "";
 					// }
@@ -260,10 +238,7 @@ public class NewsSpikeCandidate {
 						}
 						if (containKeyword)
 							continue;
-						dw.write("??", w[1], kv0.kw, kv0.phrase, kv0.eecname,
-								kv0.s1,
-								kv0.s2,
-								uniqHeadSize);
+						dw.write("??", w[1], kv0.kw, kv0.phrase, kv0.eecname, kv0.s1, kv0.s2, uniqHeadSize);
 
 						appearedKeywords.add(w[1] + "\t" + kv0.kw);
 						boolean containsNeg = false;
@@ -288,9 +263,11 @@ public class NewsSpikeCandidate {
 		}
 	}
 
-
 	public static void main(String[] args) {
 		try {
+			if (args.length > 0) {
+				Config.configFile = args[0];
+			}
 			Config.parseConfig();
 			candidates(Config.parallelFile, Config.eventsFile, Config.keywordsFile, Config.candidatesFile);
 		} catch (Exception e) {

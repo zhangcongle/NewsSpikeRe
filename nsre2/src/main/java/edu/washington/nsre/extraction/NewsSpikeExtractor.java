@@ -1099,6 +1099,9 @@ public class NewsSpikeExtractor {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		try {
+			if (args.length > 0) {
+				Config.configFile = args[0];
+			}
 			Config.parseConfig();
 			List<ConnectedComponent> ccs = featurize(Config.parallelFile, Config.candidatesFile,
 					Config.tempDirGenerate);

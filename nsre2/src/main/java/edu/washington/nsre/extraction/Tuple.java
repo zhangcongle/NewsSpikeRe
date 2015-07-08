@@ -86,8 +86,7 @@ public class Tuple {
 		}
 	}
 
-	public Tuple(Date date, ReverbExtraction re, ReverbSentence rs,
-			long articleId) {
+	public Tuple(Date date, ReverbExtraction re, ReverbSentence rs, long articleId) {
 		this.date = date;
 		this.articleId = articleId;
 		artOffset = rs.artOffset;
@@ -127,16 +126,14 @@ public class Tuple {
 		int end = v[1];
 		int head = -1;
 		for (SentDep sd : deps) {
-			if (pos[sd.g].startsWith("V") && (sd.g < end && sd.g >= start)
-					&& (sd.d >= end || sd.d < start)) {
+			if (pos[sd.g].startsWith("V") && (sd.g < end && sd.g >= start) && (sd.d >= end || sd.d < start)) {
 				int h = sd.g;
 				// String v = lmma[h].toLowerCase();
 				if (h > head) {
 					head = h;
 				}
 			}
-			if (pos[sd.d].startsWith("V") && (sd.d < end && sd.d >= start)
-					&& (sd.g >= end || sd.g < start)) {
+			if (pos[sd.d].startsWith("V") && (sd.d < end && sd.d >= start) && (sd.g >= end || sd.g < start)) {
 				int h = sd.d;
 				// String v = lmma[h].toLowerCase();
 				// if (!RemoveStopwords.isStopVerb(v))
@@ -160,14 +157,12 @@ public class Tuple {
 		int end = v[1];
 		int[] count = new int[tkn.length];
 		for (SentDep sd : deps) {
-			if (pos[sd.g].startsWith("V") && (sd.g < end && sd.g >= start)
-					&& (sd.d >= end || sd.d < start)) {
+			if (pos[sd.g].startsWith("V") && (sd.g < end && sd.g >= start) && (sd.d >= end || sd.d < start)) {
 				int h = sd.g;
 				count[h]++;
 
 			}
-			if (pos[sd.d].startsWith("V") && (sd.d < end && sd.d >= start)
-					&& (sd.g >= end || sd.g < start)) {
+			if (pos[sd.d].startsWith("V") && (sd.d < end && sd.d >= start) && (sd.g >= end || sd.g < start)) {
 				int h = sd.d;
 				count[h]++;
 			}
@@ -175,9 +170,7 @@ public class Tuple {
 		int head = end - 1;
 		int max = 0;
 		for (int i = v[1] - 1; i >= v[0]; i--) {
-			if (!RemoveStopwords.isStopVerb(lmma[i])
-					&& !RemoveStopwords.isStop(lmma[i])
-					&& count[i] > max) {
+			if (!RemoveStopwords.isStopVerb(lmma[i]) && !RemoveStopwords.isStop(lmma[i]) && count[i] > max) {
 				head = i;
 				max = count[i];
 			}
@@ -236,15 +229,12 @@ public class Tuple {
 
 		// setIndexDeps();
 		setRelHead();
-		this.tense = UtilMath.tenseOfVerbPhrase(this.tkn, this.pos, this.v[0],
-				this.v[1]);
+		this.tense = UtilMath.tenseOfVerbPhrase(this.tkn, this.pos, this.v[0], this.v[1]);
 	}
 
 	public String getTense() {
 		if (tense == null) {
-			this.tense = UtilMath.tenseOfVerbPhrase(this.tkn, this.pos,
-					this.v[0],
-					this.v[1]);
+			this.tense = UtilMath.tenseOfVerbPhrase(this.tkn, this.pos, this.v[0], this.v[1]);
 		}
 		return tense;
 	}
@@ -289,12 +279,42 @@ public class Tuple {
 		return sner1;
 	}
 
+	public String getArg1StanfordNer() {
+		String sner1 = getArg1Ner();
+		return mapSner2Fner(sner1);
+	}
+
+	public String getArg2StanfordNer() {
+		String sner2 = getArg2Ner();
+		return mapSner2Fner(sner2);
+	}
+
 	public String getArg2Ner() {
 		// return ner[a2[2]];
 		if (sner2 == null) {
 			sner2 = ner[a2[1] - 1];
 		}
 		return sner2;
+	}
+
+	public static String mapSner2Fner(String ner) {
+		if (ner.equals("PERSON")) {
+			return "/person";
+		} else if (ner.equals("ORGANIZATION")) {
+			return "/organization";
+		} else if (ner.equals("LOCATION")) {
+			return "/location";
+		} else if (ner.equals("TIME")) {
+			return "/time";
+		} else if (ner.equals("MONEY")) {
+			return "/money";
+		} else if (ner.equals("DATE")) {
+			return "/time";
+		} else if (ner.equals("NUMBER")) {
+			return "/number";
+		} else {
+			return "/" + ner.toLowerCase();
+		}
 	}
 
 	public Counter<String> getArg1FineGrainedNer() {
@@ -378,18 +398,14 @@ public class Tuple {
 				if (!currentNer.equals("O")) {
 					// shoot an NER
 					int end = i;
-					ret.add(DW.tow(
-							StringUtil.join(tkn, " ", start, end).trim(),
-							currentNer, start,
-							end));
+					ret.add(DW.tow(StringUtil.join(tkn, " ", start, end).trim(), currentNer, start, end));
 				}
 				start = i;
 				currentNer = ner[i];
 			}
 		}
 		if (start > 0 && !currentNer.equals("O")) {
-			ret.add(DW.tow(StringUtil.join(tkn, " ", start, END).trim(),
-					currentNer, start, END));
+			ret.add(DW.tow(StringUtil.join(tkn, " ", start, END).trim(), currentNer, start, END));
 		}
 		return ret;
 	}
@@ -545,8 +561,7 @@ public class Tuple {
 				}
 				now = a2p;
 				Set<Integer> appeared = new HashSet<Integer>();
-				while (now >= 0 && now < parent.length
-						&& !parentOfA1.contains(now)) {
+				while (now >= 0 && now < parent.length && !parentOfA1.contains(now)) {
 					if (appeared.contains(now)) {
 						break;
 					}
@@ -585,9 +600,7 @@ public class Tuple {
 							}
 						} else {
 							numOfUseful++;
-							if (this.ner[i].equals("NUMBER")
-									|| this.ner[i].equals("TIME")
-									|| this.ner[i].equals("DATE")
+							if (this.ner[i].equals("NUMBER") || this.ner[i].equals("TIME") || this.ner[i].equals("DATE")
 									|| this.ner[i].equals("MONEY")) {
 								if (!sb.toString().endsWith("NN "))
 									sb.append("NN ");
@@ -634,12 +647,10 @@ public class Tuple {
 		if (t.shortestPath == null) {
 			StringBuilder sb = new StringBuilder();
 			String[][] deps = RelationECML.getDeps(t.tkn.length, t.deps);
-			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length,
-					t.deps);
+			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length, t.deps);
 			List<Integer> path = new ArrayList<Integer>();
 			List<Integer> pathdir = new ArrayList<Integer>();
-			boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2],
-					path, pathdir);
+			boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2], path, pathdir);
 			if (success) {
 				for (int i = path.size() - 1; i >= 1; i--) {
 					int start = path.get(i);
@@ -671,12 +682,10 @@ public class Tuple {
 		Tuple t = this;
 		if (wordsInShortestPath == null) {
 			String[][] deps = RelationECML.getDeps(t.tkn.length, t.deps);
-			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length,
-					t.deps);
+			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length, t.deps);
 			List<Integer> path = new ArrayList<Integer>();
 			List<Integer> pathdir = new ArrayList<Integer>();
-			boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2],
-					path, pathdir);
+			boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2], path, pathdir);
 			if (success) {
 				wordsInShortestPath = new String[path.size()];
 				for (int i = path.size() - 1; i >= 0; i--) {
@@ -709,10 +718,7 @@ public class Tuple {
 				for (Entry<Integer, String> e : indexdep.get(vhead).entrySet()) {
 					String type = e.getValue();
 					int dep = e.getKey();
-					if (dep >= a2[0] && dep < a2[1] || dep >= a1[0]
-							&& dep < a1[1]
-							|| dep >= v[0]
-							&& dep < v[1])
+					if (dep >= a2[0] && dep < a2[1] || dep >= a1[0] && dep < a1[1] || dep >= v[0] && dep < v[1])
 						continue;
 					if (type.startsWith("prep-")) {
 						type = type.replace("prep-", "");
@@ -734,9 +740,7 @@ public class Tuple {
 			for (Entry<Integer, String> e : indexdep.get(vhead).entrySet()) {
 				String type = e.getValue();
 				int dep = e.getKey();
-				if (dep >= a2[0] && dep < a2[1] || dep >= a1[0] && dep < a1[1]
-						|| dep >= v[0]
-						&& dep < v[1])
+				if (dep >= a2[0] && dep < a2[1] || dep >= a1[0] && dep < a1[1] || dep >= v[0] && dep < v[1])
 					continue;
 				if (type.startsWith("prep-")) {
 					idx.add(dep);
@@ -798,8 +802,7 @@ public class Tuple {
 			return lmma[this.v[0] + 1];
 		} else {
 			for (int k = this.v[1] - 1; k >= this.v[0]; k--) {
-				if (!lightverbs.contains(lmma[k])
-						&& !RemoveStopwords.isStop(lmma[k])) {
+				if (!lightverbs.contains(lmma[k]) && !RemoveStopwords.isStop(lmma[k])) {
 					pHeadIdx = k;
 					return lmma[k];
 				}
@@ -814,8 +817,7 @@ public class Tuple {
 			return lmma[this.v[2]];
 		} else {
 			for (int k = this.v[1] - 1; k >= this.v[0]; k--) {
-				if (!lightverbs.contains(lmma[k])
-						&& !RemoveStopwords.isStop(lmma[k])) {
+				if (!lightverbs.contains(lmma[k]) && !RemoveStopwords.isStop(lmma[k])) {
 					return lmma[k];
 				}
 			}
@@ -824,10 +826,9 @@ public class Tuple {
 	}
 
 	static Set<String> lightverbs = new HashSet<String>();
+
 	static {
-		String[] lightverblist = new String[] { "make", "give", "do", "be",
-				"have", "say", "think",
-				"ask", "announce",
+		String[] lightverblist = new String[] { "make", "give", "do", "be", "have", "say", "think", "ask", "announce",
 				"warn", "urge", "take", "would", "will", "may" };
 		for (String v : lightverblist) {
 			lightverbs.add(v);
@@ -912,17 +913,14 @@ public class Tuple {
 			Tuple t = this;
 			if (pHead == null) {
 				String[][] deps = RelationECML.getDeps(t.tkn.length, t.deps);
-				LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(
-						t.tkn.length, t.deps);
+				LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length, t.deps);
 				List<Integer> path = new ArrayList<Integer>();
 				List<Integer> pathdir = new ArrayList<Integer>();
-				boolean success = ecml.findShortestPath(idxDeps, t.a1[2],
-						t.a2[2], path, pathdir);
+				boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2], path, pathdir);
 				if (success) {
 					// find last verb
 					for (int i = 1; i < path.size() - 1; i++) {
-						if (t.pos[path.get(i)].startsWith("V")
-								&& !lightverbs.contains(t.lmma[path.get(i)])) {
+						if (t.pos[path.get(i)].startsWith("V") && !lightverbs.contains(t.lmma[path.get(i)])) {
 							pHeadIdx = path.get(i);
 							pHead = t.lmma[path.get(i)].toLowerCase();
 							break;
@@ -958,12 +956,10 @@ public class Tuple {
 			Tuple t = this;
 			if (pHead == null) {
 				String[][] deps = RelationECML.getDeps(t.tkn.length, t.deps);
-				LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(
-						t.tkn.length, t.deps);
+				LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length, t.deps);
 				List<Integer> path = new ArrayList<Integer>();
 				List<Integer> pathdir = new ArrayList<Integer>();
-				boolean success = ecml.findShortestPath(idxDeps, t.a1[2],
-						t.a2[2], path, pathdir);
+				boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2], path, pathdir);
 				if (success) {
 					// find last verb
 					for (int i = 1; i < path.size() - 1; i++) {
@@ -996,12 +992,10 @@ public class Tuple {
 			Tuple t = this;
 			// if (pHead == null) {
 			String[][] deps = RelationECML.getDeps(t.tkn.length, t.deps);
-			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(
-					t.tkn.length, t.deps);
+			LinkedList<int[]>[] idxDeps = RelationECML.indexDeps(t.tkn.length, t.deps);
 			List<Integer> path = new ArrayList<Integer>();
 			List<Integer> pathdir = new ArrayList<Integer>();
-			boolean success = ecml.findShortestPath(idxDeps, t.a1[2],
-					t.a2[2], path, pathdir);
+			boolean success = ecml.findShortestPath(idxDeps, t.a1[2], t.a2[2], path, pathdir);
 			if (success) {
 				// find last verb
 				for (int i = 1; i < path.size() - 1; i++) {
@@ -1070,6 +1064,7 @@ public class Tuple {
 	}
 
 	static HashSet<String> rbForLightVerbs = new HashSet<String>();
+
 	static {
 		String[] rbs = new String[] { "out", "off" };
 		for (String r : rbs)
@@ -1202,8 +1197,7 @@ public class Tuple {
 	public String[] lmmaExceptTuple() {
 		List<String> temp = new ArrayList<String>();
 		for (int i = 0; i < lmma.length; i++) {
-			if (i >= a1[0] && i < a1[1] || i >= a2[0] && i < a2[1] || i >= v[0]
-					&& i < v[1]) {
+			if (i >= a1[0] && i < a1[1] || i >= a2[0] && i < a2[1] || i >= v[0] && i < v[1]) {
 				continue;
 			}
 			temp.add(lmma[i]);
@@ -1225,9 +1219,9 @@ public class Tuple {
 	}
 
 	static HashSet<String> uncertainWords = new HashSet<String>();
+
 	static {
-		String[] words = new String[] { "will", "would", "want", "if", "?",
-				"may", "might" };
+		String[] words = new String[] { "will", "would", "want", "if", "?", "may", "might" };
 		for (String w : words) {
 			uncertainWords.add(w);
 		}
@@ -1243,8 +1237,7 @@ public class Tuple {
 	}
 
 	public boolean isReverbUncertain() {
-		String[] uncertainWords = new String[] { "may", "can", "will", "have",
-				"want" };
+		String[] uncertainWords = new String[] { "may", "can", "will", "have", "want" };
 		HashSet<String> uncertains = new HashSet<String>();
 		for (String s : uncertainWords) {
 			uncertains.add(s);

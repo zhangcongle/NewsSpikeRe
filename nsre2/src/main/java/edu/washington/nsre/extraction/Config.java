@@ -21,7 +21,8 @@ public class Config {
 	public static String heuristicNegativeFile;
 	public static String heuristicPositiveFile;
 	public static String generatedTrainingFile;
-	public static String keywordHeuristicsFile;
+	public static String bingWordsDir;
+	// public static String keywordHeuristicsFile;
 	public static String modelFile;
 
 	public static void parseConfig() throws FileNotFoundException, IOException {
@@ -30,7 +31,7 @@ public class Config {
 		dir = Config.prop.getProperty("dir");
 		parallelFile = Config.prop.getProperty("parallelFile");
 		eventsFile = dir + File.separator + "events";
-
+		bingWordsDir = Config.prop.getProperty("bingWordsDir");
 		// users can provide the annotation if they need supervised NewsSpikeRE
 		keywordsAnnotationFile = dir + File.separator + Config.prop.getProperty("annotation");
 
@@ -44,9 +45,9 @@ public class Config {
 		modelFile = dir + File.separator + "model";
 		tempDirHeuristics = dir + File.separator + "tempHeuristics";
 
-		dictionaryFile = Config.prop.getProperty("dictionary");
+		dictionaryFile = dir + File.separator + Config.prop.getProperty("dictionary");
 		heuristicNegativeFile = Config.prop.getProperty("heuristicNegative");
 		heuristicPositiveFile = Config.prop.getProperty("heuristicPositive");
-		keywordHeuristicsFile = dir + File.separator + "keywordsHeuristics";
+		// keywordHeuristicsFile = dir + File.separator + "keywordsHeuristics";
 	}
 }

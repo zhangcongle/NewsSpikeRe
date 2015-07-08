@@ -1,6 +1,7 @@
 package edu.washington.nsre.extraction;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,8 +21,7 @@ import edu.washington.nsre.util.*;
 public class NewsSpikeHeuristics {
 	static Gson gson = new Gson();
 
-	public static void loadPhrase2eecnames(String input_tuples,
-			HashMultimap<String, String> phrase2eecnames,
+	public static void loadPhrase2eecnames(String input_tuples, HashMultimap<String, String> phrase2eecnames,
 			HashMultimap<String, String> head2eecnames) {
 		{
 			DR dr = new DR(input_tuples);
@@ -33,10 +33,9 @@ public class NewsSpikeHeuristics {
 				for (String t1 : dist1.keySet()) {
 					for (String t2 : dist2.keySet()) {
 						for (String p : t.getPatternList()) {
-							phrase2eecnames.put(t1 + "|" + p + "|" + t2,
-									t.getArg1Head() + "\t" + t.getArg2Head());
-							head2eecnames.put(t1 + "|" + t.getPatternHead() + "|" + t2
-									, t.getArg1() + "\t" + t.getArg2());
+							phrase2eecnames.put(t1 + "|" + p + "|" + t2, t.getArg1Head() + "\t" + t.getArg2Head());
+							head2eecnames.put(t1 + "|" + t.getPatternHead() + "|" + t2,
+									t.getArg1() + "\t" + t.getArg2());
 
 						}
 					}
@@ -47,8 +46,7 @@ public class NewsSpikeHeuristics {
 
 	}
 
-	public static List<String[]> keywordsHeuristicsSameHead(String input_keywords_unlabeled,
-			String dir) {
+	public static List<String[]> keywordsHeuristicsSameHead(String input_keywords_unlabeled, String dir) {
 		DR dr = new DR(input_keywords_unlabeled);
 		DW dw = new DW(dir + "/sameHead");
 		List<String[]> ret = new ArrayList<String[]>();
@@ -67,8 +65,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsSameHead(List<String[]> keywords_unlabeled,
-			String dir) {
+	public static List<String[]> keywordsHeuristicsSameHead(List<String[]> keywords_unlabeled, String dir) {
 		DW dw = new DW(dir + "/sameHead");
 		List<String[]> ret = new ArrayList<String[]>();
 		for (String[] l : keywords_unlabeled) {
@@ -84,8 +81,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsPrefix(List<String[]> keywords_unlabeled,
-			String dir) {
+	public static List<String[]> keywordsHeuristicsPrefix(List<String[]> keywords_unlabeled, String dir) {
 		DW dw = new DW(dir + "/prefix");
 		List<String[]> ret = new ArrayList<String[]>();
 		for (String[] l : keywords_unlabeled) {
@@ -160,8 +156,7 @@ public class NewsSpikeHeuristics {
 				// isSyn = true;
 				// }
 				// }
-				if (antonyms.containsEntry(ethead, w)
-						|| antonyms.containsEntry(w, ethead)) {
+				if (antonyms.containsEntry(ethead, w) || antonyms.containsEntry(w, ethead)) {
 					// l[0] = "0";
 					isAnt = true;
 				}
@@ -186,8 +181,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsBingAntonymTrans(List<String[]> list,
-			String dir,
+	public static List<String[]> keywordsHeuristicsBingAntonymTrans(List<String[]> list, String dir,
 			String input_bing_synonyms_antonyms) {
 		List<String[]> ret = new ArrayList<String[]>();
 		HashMultimap<String, String> synonyms = HashMultimap.create();
@@ -229,8 +223,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsStrongNegative(List<String[]> list,
-			String dir,
+	public static List<String[]> keywordsHeuristicsStrongNegative(List<String[]> list, String dir,
 			String input_negatives) {
 		List<String[]> ret = new ArrayList<String[]>();
 		HashMultimap<String, String> negativesMap = HashMultimap.create();
@@ -315,9 +308,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsNegative(List<String[]> list,
-			String dir,
-			String input_negatives) {
+	public static List<String[]> keywordsHeuristicsNegative(List<String[]> list, String dir, String input_negatives) {
 		List<String[]> ret = new ArrayList<String[]>();
 		HashMultimap<String, String> negativesMap = HashMultimap.create();
 		Counter<String> negatives = new ClassicCounter<String>();
@@ -353,10 +344,8 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsStrongPositive(List<String[]> list,
-			String dir,
-			String input_strongpositive,
-			HashMultimap<String, String> phrase2eecnames) {
+	public static List<String[]> keywordsHeuristicsStrongPositive(List<String[]> list, String dir,
+			String input_strongpositive, HashMultimap<String, String> phrase2eecnames) {
 		List<String[]> ret = new ArrayList<String[]>();
 		Set<String> uncertain = new HashSet<String>();
 		uncertain.add("by");
@@ -389,10 +378,8 @@ public class NewsSpikeHeuristics {
 				String ethead = et.eventphrase.head;
 				String w = l[2];
 				String p = l[3];
-				Set<String> eecsP = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + p
-						+ "|" + et.getArg2TypeRoot());
-				Set<String> eecsW = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + w
-						+ "|" + et.getArg2TypeRoot());
+				Set<String> eecsP = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + p + "|" + et.getArg2TypeRoot());
+				Set<String> eecsW = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + w + "|" + et.getArg2TypeRoot());
 				int c = Math.max(eecsP.size(), eecsW.size());
 				if (positives.getCount(ethead + "\t" + w) > 0 && c <= 150) {
 					l[0] = "1";
@@ -405,8 +392,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsWeakPositive(List<String[]> list,
-			String dir,
+	public static List<String[]> keywordsHeuristicsWeakPositive(List<String[]> list, String dir,
 			String input_weakpositive) {
 		List<String[]> ret = new ArrayList<String[]>();
 		Counter<String> positives = new ClassicCounter<String>();
@@ -437,8 +423,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsTooGeneral(List<String[]> list,
-			String dir,
+	public static List<String[]> keywordsHeuristicsTooGeneral(List<String[]> list, String dir,
 			HashMultimap<String, String> phrase2eecnames) {
 		List<String[]> ret = new ArrayList<String[]>();
 		DW dw = new DW(dir + "/toogeneral");
@@ -450,11 +435,9 @@ public class NewsSpikeHeuristics {
 				String p = l[3];
 				// Set<String> eecsEt = head2eecnames.get(et.eventphrase.head);
 				// Set<String> eecsP = head2eecnames.get(w);
-				Set<String> eecsEt = phrase2eecnames.get(et.getArg1TypeRoot() + "|" +
-						et.eventphrase.str
-						+ "|" + et.getArg2TypeRoot());
-				Set<String> eecsP = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + p
-						+ "|" + et.getArg2TypeRoot());
+				Set<String> eecsEt = phrase2eecnames
+						.get(et.getArg1TypeRoot() + "|" + et.eventphrase.str + "|" + et.getArg2TypeRoot());
+				Set<String> eecsP = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + p + "|" + et.getArg2TypeRoot());
 				int pCount = eecsP.size();
 				int etCount = eecsEt.size();
 				if (pCount > etCount) {
@@ -468,8 +451,8 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsCommonPhrase(List<String[]> list,
-			String dir, HashMultimap<String, String> phrase2eecnames) {
+	public static List<String[]> keywordsHeuristicsCommonPhrase(List<String[]> list, String dir,
+			HashMultimap<String, String> phrase2eecnames) {
 		List<String[]> ret = new ArrayList<String[]>();
 		DW dw = new DW(dir + "/common");
 		for (String[] l : list) {
@@ -477,8 +460,7 @@ public class NewsSpikeHeuristics {
 				boolean fired = false;
 				EventType et = new EventType(l[1]);
 				String p = l[3];
-				Set<String> eecsEt = phrase2eecnames.get(et.arg1type + "|" + et.eventphrase.str
-						+ "|" + et.arg2type);
+				Set<String> eecsEt = phrase2eecnames.get(et.arg1type + "|" + et.eventphrase.str + "|" + et.arg2type);
 				Set<String> eecsP = phrase2eecnames.get(et.arg1type + "|" + p + "|" + et.arg2type);
 				int pCount = eecsP.size();
 				int pOverlap = 0;
@@ -501,8 +483,8 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsRarePhrase(List<String[]> list,
-			String dir, HashMultimap<String, String> head2eecnames) {
+	public static List<String[]> keywordsHeuristicsRarePhrase(List<String[]> list, String dir,
+			HashMultimap<String, String> head2eecnames) {
 		List<String[]> ret = new ArrayList<String[]>();
 		DW dw = new DW(dir + "/rare");
 		for (String[] l : list) {
@@ -511,8 +493,7 @@ public class NewsSpikeHeuristics {
 				EventType et = new EventType(l[1]);
 				String w = l[2];
 				String p = l[3];
-				Set<String> eecsEt = head2eecnames.get(et.arg1type + "|" + et.eventphrase.head
-						+ "|" + et.arg2type);
+				Set<String> eecsEt = head2eecnames.get(et.arg1type + "|" + et.eventphrase.head + "|" + et.arg2type);
 				Set<String> eecsP = head2eecnames.get(et.arg1type + "|" + w + "|" + et.arg2type);
 				int pCount = eecsP.size();
 				int pOverlap = 0;
@@ -535,8 +516,7 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static List<String[]> keywordsHeuristicsRestPhrase(List<String[]> list,
-			String dir,
+	public static List<String[]> keywordsHeuristicsRestPhrase(List<String[]> list, String dir,
 			HashMultimap<String, String> head2eecnames) {
 		List<String[]> ret = new ArrayList<String[]>();
 		DW dw = new DW(dir + "/rest");
@@ -557,17 +537,14 @@ public class NewsSpikeHeuristics {
 				String p = l[3];
 				Set<String> eecsEt = new HashSet<String>();
 				for (String pos : posPhrases.get(et.eventphrase.str)) {
-					eecsEt.addAll(head2eecnames.get(et.getArg1TypeRoot() + "|"
-							+ pos
-							+ "|" + et.getArg2TypeRoot()));
+					eecsEt.addAll(head2eecnames.get(et.getArg1TypeRoot() + "|" + pos + "|" + et.getArg2TypeRoot()));
 				}
 				// Set<String> eecsEt = head2eecnames.get(et.getArg1TypeRoot() +
 				// "|"
 				// + et.eventphrase.head
 				// + "|" + et.getArg2TypeRoot());
 
-				Set<String> eecsP = head2eecnames.get(et.getArg1TypeRoot() + "|" + w + "|"
-						+ et.getArg2TypeRoot());
+				Set<String> eecsP = head2eecnames.get(et.getArg1TypeRoot() + "|" + w + "|" + et.getArg2TypeRoot());
 				int pCount = eecsP.size();
 				int pOverlap = 0;
 				for (String eec : eecsP) {
@@ -575,7 +552,7 @@ public class NewsSpikeHeuristics {
 						pOverlap++;
 					}
 				}
-				if (pOverlap * 1.0 / pCount > 0.6) {
+				if (pOverlap * 1.0 / pCount > 0.9) {
 					fired = true;
 				}
 				if (fired) {
@@ -589,13 +566,8 @@ public class NewsSpikeHeuristics {
 		return ret;
 	}
 
-	public static void heuristics(String input_keywords_unlabeled,
-			String dir,
-			String output,
-			String input_tuples,
-			String input_dictionary,
-			String input_heuristic_negatives,
-			String input_heuristic_positives) {
+	public static void heuristics(String input_keywords_unlabeled, String dir, String output, String input_tuples,
+			String input_dictionary, String input_heuristic_negatives, String input_heuristic_positives) {
 		if (!new File(dir).exists())
 			(new File(dir)).mkdir();
 		HashMultimap<String, String> phrase2eecnames = HashMultimap.create();
@@ -606,13 +578,10 @@ public class NewsSpikeHeuristics {
 		list = keywordsHeuristicsBingSynonym(list, dir, input_dictionary);
 		list = keywordsHeuristicsBingAntonymTrans(list, dir, input_dictionary);
 		list = keywordsHeuristicsTooGeneral(list, dir, phrase2eecnames);
-		list = keywordsHeuristicsStrongPositive(list, dir, input_heuristic_positives,
-				head2eecnames);
-		list = keywordsHeuristicsStrongNegative(list, dir,
-				input_heuristic_negatives);
+		list = keywordsHeuristicsStrongPositive(list, dir, input_heuristic_positives, head2eecnames);
+		list = keywordsHeuristicsStrongNegative(list, dir, input_heuristic_negatives);
 		list = keywordsHeuristicsNegative(list, dir, input_heuristic_negatives);
-		list = keywordsHeuristicsRestPhrase(list, dir,
-				head2eecnames);
+		list = keywordsHeuristicsRestPhrase(list, dir, head2eecnames);
 		// list = keywordsHeuristicsCommonPhrase(list, dir,
 		// phrase2eecnames);
 		// list = keywordsHeuristicsRarePhrase(list, dir,
@@ -629,6 +598,96 @@ public class NewsSpikeHeuristics {
 		}
 	}
 
+	public static void crawlBingDefinition(String input_candidates,
+			String bingWordDir,
+			String tempHeuristicsDir,
+			String output) throws IOException {
+		// HashMap<String, String> words = new HashMap<String, String>();
+		HashSet<String> words = new HashSet<String>();
+		{
+			DR dr = new DR(input_candidates);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String w = l[1].split(" ")[0];
+				words.add(w);
+			}
+			dr.close();
+		}
+		if(!new File(tempHeuristicsDir).exists()){
+			new File(tempHeuristicsDir).mkdir();
+		}
+		String file1 = tempHeuristicsDir + File.separator + "bing_syn_ant_1";
+		{
+
+			DW dw = new DW(file1);
+			for (String w : words) {
+				List<String[]> ret = BingWordDefinition.oneword(w, bingWordDir);
+				for (String[] r : ret)
+					dw.write(r);
+			}
+			dw.close();
+		}
+		{
+			DR dr = new DR(file1);
+			DW dw = new DW(output);
+			List<String[]> b;
+			while ((b = dr.readBlock(1)) != null) {
+				Counter<String> c = new ClassicCounter<String>();
+				String key = b.get(0)[1];
+				for (String[] l : b) {
+					dw.write(l);
+					if (l[0].equals("1") && l[2].contains(" ")) {
+						String[] abc = l[2].split(" ");
+						for (String w : abc) {
+							if (!RemoveStopwords.isStop(w) && !RemoveStopwords.isStopVerb(w)) {
+								c.incrementCount(w);
+							}
+						}
+					}
+				}
+				for (String w : c.keySet()) {
+					if (c.getCount(w) > 1) {
+						D.p("1", key, w);
+						dw.write("1", key, w);
+					}
+				}
+			}
+			dw.close();
+		}
+	}
+
+	public static void bing_synonyms_antonyms_add_count(String input_tuples, String input_bing_synonyms_antonyms,
+			String output_bing_synonyms_antonyms_count) {
+		Counter<String> countKeywords = new IntCounter<String>();
+		{
+			DR dr = new DR(input_tuples);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				Tuple t = gson.fromJson(l[2], Tuple.class);
+				Set<String> keywords = t.getPatternKeywords();
+				for (String p : t.getPatternList()) {
+					keywords.add(p);
+				}
+				for (String w : keywords) {
+					countKeywords.incrementCount(w);
+				}
+			}
+			dr.close();
+		}
+		{
+			DR dr = new DR(input_bing_synonyms_antonyms);
+			DW dw = new DW(output_bing_synonyms_antonyms_count);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int c1 = (int) countKeywords.getCount(l[1]);
+				int c2 = (int) countKeywords.getCount(l[2]);
+				dw.write(l[0], l[1], l[2], c1, c2);
+			}
+			dr.close();
+			dw.close();
+		}
+	}
+
 	public static void main(String[] args) {
 		// String input_keywords_unlabeled = args[0];
 		// String dir = args[1];
@@ -638,14 +697,25 @@ public class NewsSpikeHeuristics {
 		// String input_heuristic_negatives = args[5];
 		// String input_heuristic_positives = args[6];
 		try {
+			if (args.length > 0) {
+				Config.configFile = args[0];
+			}
 			Config.parseConfig();
-			heuristics(Config.keywordsFile,
+			NewsSpikeCandidate.CAP1 = 100;
+			NewsSpikeCandidate.CAP3 = 100;
+			NewsSpikeCandidate.candidates(Config.parallelFile, Config.eventsFile, Config.keywordsFile,
+					Config.candidatesFile);
+			crawlBingDefinition(Config.candidatesFile,
+					Config.bingWordsDir,
 					Config.tempDirHeuristics,
-					Config.keywordHeuristicsFile,
-					Config.parallelFile,
-					Config.dictionaryFile,
-					Config.heuristicNegativeFile,
+					Config.dictionaryFile);
+			heuristics(Config.keywordsFile, Config.tempDirHeuristics, Config.keywordsAnnotationFile,
+					Config.parallelFile, Config.dictionaryFile, Config.heuristicNegativeFile,
 					Config.heuristicPositiveFile);
+			List<ConnectedComponent> ccs = NewsSpikeExtractor.featurize(Config.parallelFile, Config.candidatesFile,
+					Config.tempDirGenerate);
+			NewsSpikeExtractor.learning(ccs, Config.keywordsAnnotationFile, Config.generatedTrainingFile);
+			NewsSpikeExtractor.buildExtractor(Config.generatedTrainingFile, Config.modelFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -86,7 +86,11 @@ public class NewsSpikePredict {
 			// }
 			// }
 			Counters.normalize(scorer);
-			dw.write(Util.counter2jsonstr(scorer));
+			if (scorer.size() > 0) {
+				dw.write(Util.counter2jsonstr(scorer), l[0], l[1]);
+			} else {
+				dw.write(Util.counter2jsonstr(scorer));
+			}
 		}
 		dr.close();
 		dw.close();
@@ -177,10 +181,11 @@ public class NewsSpikePredict {
 		// TODO Auto-generated method stub
 		// String input_generated = args[0];
 		try {
-			Config.parseConfig();
-			String inputTestFile = args[0];
-			String outputPredictFile = args[1];
-			predict(Config.modelFile, inputTestFile, outputPredictFile);
+			// Config.parseConfig();
+			String inputModelFile = args[0];
+			String inputTestFile = args[1];
+			String outputPredictFile = args[2];
+			predict(inputModelFile, inputTestFile, outputPredictFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
