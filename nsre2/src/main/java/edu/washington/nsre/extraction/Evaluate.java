@@ -161,7 +161,7 @@ public class Evaluate {
 		}
 		{
 			List<String[]> reportForR = new ArrayList<String[]>();
-			D.p("repr.relations.size()", repr.relations.size());
+//			D.p("repr.relations.size()", repr.relations.size());
 			// for (String r : repr.prcurveByrel.keySet()) {
 			for (String r : repr.relations) {
 				String rr = r.replaceAll("\\W+", "_");
