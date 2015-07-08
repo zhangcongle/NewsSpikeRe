@@ -16,4 +16,12 @@ To compile the system:
 - cp $DYLD_LIBRARY_PATH/mosek.jar lib/mosek.jar (if you are using Linux, it should be "$LD_LIBRARY_PATH/mosek.jar"
 - mvn compile
 
+To predict relations in the parsed sentences from data/test:
+- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikePredict data/test data/predict
+
+Here are the commands to parse sentences to the same format of data/test (the output file is data/preprocess/tuples)
+- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.figer.ParseStanfordFigerReverb data/preprocess/text data/preprocess/parsed
+- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.figer.Parsed2Tuple data/preprocess/parsed data/preprocess/tuples
+
+Here are the commands to 
 
