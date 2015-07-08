@@ -7,7 +7,7 @@ To start with, you should install
 
 To compile the system: 
 
-- git clone ...
+- git clone https://github.com/zhangcongle/NewsSpikeRe.git
 - cd nsre2
 - wget http://www.cs.washington.edu/ai/clzhang/nsre2/data.tgz
 - wget http://www.cs.washington.edu/ai/clzhang/nsre2/lib.tgz
