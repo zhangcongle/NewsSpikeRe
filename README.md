@@ -15,6 +15,7 @@ To compile the system:
 - tar xvf lib.tgz
 - cp $DYLD_LIBRARY_PATH/mosek.jar lib/mosek.jar (if you are using Linux, it should be "$LD_LIBRARY_PATH/mosek.jar"
 - mvn compile
+- mvn package
 
 To predict relations in the parsed sentences "data/test", by using the model "data/scale/model"
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikePredict data/scale/model data/test data/scale/predict
