@@ -751,7 +751,7 @@ public class NewsSpikeExtractor {
 			}
 		}
 		for (int t = 0; t < 10; t++) {
-			// D.p("iteration", t);
+			D.p("iteration", t);
 			for (ConnectedComponentTrain cct : ccts) {
 				HashMap<String, Double> infer = inference(weight, cct);
 				cct.phrasePred = infer.containsKey("Y") && infer.get("Y") > 0.9 ? 1 : -1;
@@ -870,7 +870,7 @@ public class NewsSpikeExtractor {
 		return dir;
 	}
 
-	public static HashMap<String, Double> inference(Counter<String> weight, ConnectedComponent cc) {
+	public static HashMap<String, Double> inferenceILP(Counter<String> weight, ConnectedComponent cc) {
 		IntegerLinearProgramming ilp = new IntegerLinearProgramming();
 		Counter<String> objective = new ClassicCounter<String>();
 		ilp.setObjective(objective, true);
@@ -914,7 +914,7 @@ public class NewsSpikeExtractor {
 		return result;
 	}
 
-	public static HashMap<String, Double> inferenceApproximate(Counter<String> weight, ConnectedComponent cc) {
+	public static HashMap<String, Double> inference(Counter<String> weight, ConnectedComponent cc) {
 		HashMap<String, Double> result = new HashMap<String, Double>();
 		double scoreY = cc.phraseFactor.score(weight, -0.1);
 		if (scoreY > 0) {

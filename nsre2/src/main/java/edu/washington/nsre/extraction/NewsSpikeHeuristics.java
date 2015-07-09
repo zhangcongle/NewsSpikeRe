@@ -317,6 +317,8 @@ public class NewsSpikeHeuristics {
 			String[] l;
 			while ((l = dr.read()) != null) {
 				String[] ab = l[4].split("@");
+				if(l.length<5 || ab.length<2)
+					D.p(l);
 				negativesMap.put(l[0] + "\t" + l[1], ab[0] + "\t" + ab[1]);
 				negativesMap.put(l[1] + "\t" + l[0], ab[0] + "\t" + ab[1]);
 				// negatives.incrementCount(l[0] + "\t" + l[1]);
@@ -381,7 +383,10 @@ public class NewsSpikeHeuristics {
 				Set<String> eecsP = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + p + "|" + et.getArg2TypeRoot());
 				Set<String> eecsW = phrase2eecnames.get(et.getArg1TypeRoot() + "|" + w + "|" + et.getArg2TypeRoot());
 				int c = Math.max(eecsP.size(), eecsW.size());
-				if (positives.getCount(ethead + "\t" + w) > 0 && c <= 150) {
+				if (positives.getCount(ethead + "\t" + w) > 0 /* && c <= 150 */) {
+//					if (c > 150) {
+//						D.p(l[0], l[1], l[2], l[3], c);
+//					}
 					l[0] = "1";
 					dw.write(l[0], l[1], l[2], l[3], c);
 				}
@@ -575,12 +580,14 @@ public class NewsSpikeHeuristics {
 		loadPhrase2eecnames(input_tuples, phrase2eecnames, head2eecnames);
 		List<String[]> list = keywordsHeuristicsSameHead(input_keywords_unlabeled, dir);
 		list = keywordsHeuristicsPrefix(list, dir);
+		list = keywordsHeuristicsStrongPositive(list, dir, input_heuristic_positives, head2eecnames);
+		list = keywordsHeuristicsNegative(list, dir, input_heuristic_negatives);
+
 		list = keywordsHeuristicsBingSynonym(list, dir, input_dictionary);
 		list = keywordsHeuristicsBingAntonymTrans(list, dir, input_dictionary);
-		list = keywordsHeuristicsTooGeneral(list, dir, phrase2eecnames);
-		list = keywordsHeuristicsStrongPositive(list, dir, input_heuristic_positives, head2eecnames);
-		list = keywordsHeuristicsStrongNegative(list, dir, input_heuristic_negatives);
-		list = keywordsHeuristicsNegative(list, dir, input_heuristic_negatives);
+		// list = keywordsHeuristicsTooGeneral(list, dir, phrase2eecnames);
+		// list = keywordsHeuristicsStrongNegative(list, dir,
+		// input_heuristic_negatives);
 		list = keywordsHeuristicsRestPhrase(list, dir, head2eecnames);
 		// list = keywordsHeuristicsCommonPhrase(list, dir,
 		// phrase2eecnames);
@@ -613,7 +620,7 @@ public class NewsSpikeHeuristics {
 			}
 			dr.close();
 		}
-		if(!new File(tempHeuristicsDir).exists()){
+		if (!new File(tempHeuristicsDir).exists()) {
 			new File(tempHeuristicsDir).mkdir();
 		}
 		String file1 = tempHeuristicsDir + File.separator + "bing_syn_ant_1";
