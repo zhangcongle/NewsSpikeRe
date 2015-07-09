@@ -29,7 +29,7 @@ To annotate data/scale/keywordsUnlabeled, we get data/scale/keywordsAnnotation, 
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeExtractor data/scale/nsre.conf
 
 Here is the command to discovery event relations from data/parallel
-java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.EventDiscovery data/parallel 30 data/event30/events
+- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.EventDiscovery data/parallel 30 data/event30/events
 
 Here is the commands to learn a relation extraction model in a heuristic, unsupervised way:
-java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeHeuristics data/event30/nsre.conf
+- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeHeuristics data/event30/nsre.conf
