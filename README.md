@@ -28,9 +28,3 @@ Here is the script to learn a relation extraction model with a few tagged words:
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeCandidate data/scale/nsre.conf
 We get data/scale/keywordsAnnotation after annotating data/scale/keywordsUnlabeled, then:
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeExtractor data/scale/nsre.conf
-
-Here is the command to discovery event relations from data/parallel
-- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.EventDiscovery data/parallel 30 data/event30/events
-
-Here is the command to learn a relation extraction model in a heuristic, unsupervised manner:
-- java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeHeuristics data/event30/nsre.conf
