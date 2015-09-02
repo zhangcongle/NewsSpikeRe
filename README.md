@@ -26,5 +26,7 @@ Here are the commands to parse sentences to the same format of data/test (the ou
 
 Here is the script to learn a relation extraction model with a few tagged words:
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeCandidate data/scale/nsre.conf
+
 We get data/scale/keywordsAnnotation after annotating data/scale/keywordsUnlabeled, then:
+
 - java -Xmx10g -cp target/classes:target/lib/* edu.washington.nsre.extraction.NewsSpikeExtractor data/scale/nsre.conf
